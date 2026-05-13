@@ -30,9 +30,8 @@ public class ServicioCosturaServiceImpl implements ServicioCosturaService {
 
     @Override
     public void calcularValor(ServicioCostura servicioCostura) {
-        // Llama al método de tu entidad
+
         servicioCostura.calcularValor();
-        // Guarda el servicio actualizado en la BD
         servicioCosturaRepository.save(servicioCostura);
     }
 }

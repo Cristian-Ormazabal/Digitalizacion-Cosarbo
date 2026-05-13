@@ -28,7 +28,7 @@ public class CarritoServiceImpl implements CarritoService {
         int total = 0;
         if (carrito.getItems() != null) {
             for (itemCarrito item : carrito.getItems()) {
-                // Cantidad x Precio del producto asociado al item
+                
                 total += item.getCantidad() * item.getProducto().getPrecio();
             }
         }
