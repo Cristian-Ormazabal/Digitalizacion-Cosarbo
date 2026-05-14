@@ -13,7 +13,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/usuarios")
-@CrossOrigin(origins = "http://localhost:5173") // Permite la conexión desde tu React
+@CrossOrigin(origins = {"http://localhost:5173", "https://tu-app-cosarbo.netlify.app"})
 public class UsuarioController {
 
     @Autowired

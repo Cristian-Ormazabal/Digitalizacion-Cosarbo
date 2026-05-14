@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/servicios-costura")
-@CrossOrigin(origins = "http://localhost:5173") // Ajusta al puerto de tu Vite/React
+@CrossOrigin(origins = {"http://localhost:5173", "https://tu-app-cosarbo.netlify.app"})
 public class ServicioCosturaController {
 
     @Autowired
