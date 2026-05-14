@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-// import axios from 'axios';
-import api from '../../api/apiConfig.js';
+import axios from 'axios';
 import { Container, Table, Button, Badge, Card, Spinner, Row, Col, Modal, Form, Tabs, Tab } from 'react-bootstrap';
 
 export default function AdminPanel() {
@@ -36,9 +35,9 @@ export default function AdminPanel() {
         setLoading(true);
         try {
             const [resPedidos, resProductos, resServicios] = await Promise.all([
-                api.get('/api/v1/pedidos'),
-                api.get('/api/v1/productos'),
-                api.get('/api/v1/servicios-costura') // Tu nuevo endpoint
+                axios.get('http://localhost:8080/api/v1/pedidos'),
+                axios.get('http://localhost:8080/api/v1/productos'),
+                axios.get('http://localhost:8080/api/v1/servicios-costura') // Tu nuevo endpoint
             ]);
             setPedidos(resPedidos.data);
             setProductos(resProductos.data);
@@ -55,9 +54,9 @@ export default function AdminPanel() {
         try {
             // Si tiene idProducto, es edición (PUT), si no, es nuevo (POST)
             if (productoEdit.idProducto) {
-                await api.put(`/api/v1/productos/${productoEdit.idProducto}`, productoEdit);
+                await axios.put(`http://localhost:8080/api/v1/productos/${productoEdit.idProducto}`, productoEdit);
             } else {
-                await api.post('/api/v1/productos', productoEdit);
+                await axios.post('http://localhost:8080/api/v1/productos', productoEdit);
             }
             setShowModal(false);
             cargarDatos(); // Recargar tablas
@@ -69,7 +68,7 @@ export default function AdminPanel() {
     const handleSaveServicio = async (e) => {
       e.preventDefault();
         try {
-            await api.post('/api/v1/servicios-costura', servicioEdit);
+            await axios.post('http://localhost:8080/api/v1/servicios-costura', servicioEdit);
             setShowModalServicio(false);
             cargarDatos();
             alert("Servicio actualizado correctamente");
