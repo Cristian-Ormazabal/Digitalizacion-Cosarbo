@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 // import axios from 'axios';
-import api from '../../api/apiConfig';
+import api from '../../api/apiConfig.js';
 import { Container, Table, Button, Badge, Card, Spinner, Row, Col, Modal, Form, Tabs, Tab } from 'react-bootstrap';
 
 export default function AdminPanel() {
