@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/carrito")
-@CrossOrigin(origins = {"http://localhost:5173", "https://tu-app-cosarbo.netlify.app"})
+@CrossOrigin(origins = {"http://localhost:5173", "https://cosarbo.netlify.app"})
 public class CarritoController {
 
     @Autowired

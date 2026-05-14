@@ -10,7 +10,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/pedidos")
-@CrossOrigin(origins = {"http://localhost:5173", "https://tu-app-cosarbo.netlify.app"})public class PedidoController {
+@CrossOrigin(origins = {"http://localhost:5173", "https://cosarbo.netlify.app"})
+public class PedidoController {
 
     @Autowired
     private PedidoRepository pedidoRepository;
