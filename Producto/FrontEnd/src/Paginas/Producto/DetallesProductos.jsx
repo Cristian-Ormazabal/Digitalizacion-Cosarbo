@@ -1,108 +1,134 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Row, Col, Button, Form, Badge, Card } from 'react-bootstrap';
-import { CartContext } from '../../Context/CartContext.jsx';
+import axios from 'axios';
+import { Container, Row, Col, Button, Badge, Spinner, Card } from 'react-bootstrap';
 
-const DetallesProductos = () => {
-  const { id } = useParams(); // Aquí captura el ID de la URL
-  const navigate = useNavigate();
-  const { addToCart } = useContext(CartContext);
-  const [cantidad, setCantidad] = useState(1);
-
-  // Datos de ejemplo
-  const producto = {
-    id: id,
-    nombre: "Dragoncito Crochet Verde",
-    precio: 12990,
-    descripcion: "Amigurumi tejido a mano con hilo de algodón hipoalergénico. Ideal para regalo o decoración de habitaciones infantiles.",
-    stock: 5,
-    categoria: "Amigurumi",
-    imagen: "https://placehold.co/600x600?text=Dragoncito+Verde"
-  };
-
-  const handleAgregarCarrito = () => {
-    console.log(`Agregado al carrito: ${producto.nombre} - Cantidad: ${cantidad}`);
-    addToCart(producto, cantidad);
-    alert(`Has añadido ${cantidad} ${producto.nombre}(s) al carrito.`);
-  };
-
-  return (
-    <Container className="py-5">
-      <Row className="gy-4">
-        {/* Columna de Imagen */}
-        <Col md={6}>
-          <Card className="border-0 shadow-sm overflow-hidden rounded-4">
-            <Card.Img src={producto.imagen} alt={producto.nombre} />
-          </Card>
-        </Col>
-
-        {/* Columna de Información */}
-        <Col md={6}>
-          <div className="ps-md-4">
-            <Badge bg="success" className="mb-2 rounded-pill px-3 py-2">
-              {producto.categoria}
-            </Badge>
-            <h2 className="display-5 fw-bold mb-3">{producto.nombre}</h2>
-            <h3 className="text-muted mb-4">${producto.precio.toLocaleString('es-CL')}</h3>
-            
-            <hr />
-            
-            <p className="lead fs-6 text-secondary mb-4">
-              {producto.descripcion}
-            </p>
-
-            {producto.categoria === "Amigurumi" ? (
-              // Vista para Productos Físicos
-              <div className="mb-4">
-                <Form.Group className="mb-3" style={{ maxWidth: '150px' }}>
-                  <Form.Label className="fw-bold">Cantidad</Form.Label>
-                  <Form.Control 
-                    type="number" 
-                    value={cantidad} 
-                    min="1" 
-                    max={producto.stock}
-                    onChange={(e) => setCantidad(e.target.value)}
-                    className="rounded-pill border-2"
-                  />
-                  <Form.Text className="text-muted">
-                    {producto.stock} unidades disponibles
-                  </Form.Text>
-                </Form.Group>
-                
-                <Button 
-                  variant="success" 
-                  size="lg" 
-                  className="w-100 rounded-pill py-3 fw-bold shadow-sm"
-                  onClick={handleAgregarCarrito}
-                >
-                  <i className="bi bi-cart-plus me-2"></i> Añadir al Carrito
-                </Button>
-              </div>
-            ) : (
-              // Vista para Servicios de Costura
-              <div className="bg-light p-4 rounded-4 border border-2 border-dashed border-success">
-                <h5 className="fw-bold"><i className="bi bi-calendar-check me-2"></i>Información del Servicio</h5>
-                <p className="small mb-3">Este servicio requiere entrega presencial en nuestro taller en Maipú.</p>
-                <Button 
-                  as="a" 
-                  href="https://wa.me/tu-numero" 
-                  variant="outline-success" 
-                  className="w-100 rounded-pill fw-bold"
-                >
-                  Consultar Disponibilidad por WhatsApp
-                </Button>
-              </div>
-            )}
-
-            <div className="mt-5">
-              <h6><i className="bi bi-shield-check me-2 text-success"></i> Compra Segura</h6>
-              <p className="small text-muted">Retiro en local disponible en 24 horas hábiles una vez confirmada la compra.</p>
-            </div>
-          </div>
-        </Col>
-      </Row>
-    </Container>
-  );
+const formatearPrecio = (precio) => {
+    return new Intl.NumberFormat('es-CL', {
+        style: 'currency',
+        currency: 'CLP'
+    }).format(precio);
 };
 
-export default DetallesProductos;
+export default function DetallesProducto() {
+    const { id } = useParams(); // Obtenemos el ID de la URL
+    const navigate = useNavigate();
+    const [producto, setProducto] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [agregando, setAgregando] = useState(false);
+
+    useEffect(() => {
+        const fetchProducto = async () => {
+            try {
+                // Endpoint para traer un solo producto por ID
+                const response = await axios.get(`http://localhost:8080/api/v1/productos/${id}`);
+                setProducto(response.data);
+                setLoading(false);
+            } catch (error) {
+                console.error("Error al cargar detalle:", error);
+                setLoading(false);
+            }
+        };
+        fetchProducto();
+    }, [id]);
+
+    const handleAgregarCarrito = async () => {
+        const cartId = localStorage.getItem('cart_id');
+        if (!cartId) {
+            alert("Debes iniciar sesión para comprar");
+            navigate('/login');
+            return;
+        }
+
+        setAgregando(true);
+        try {
+            // Estructura para tu ItemCarrito (ajusta según tu backend)
+            await axios.post('http://localhost:8080/api/v1/items-carrito', {
+                idCarrito: parseInt(cartId),
+                idProducto: producto.idProducto,
+                cantidad: 1,
+                subTotal: producto.precio
+            });
+            alert(`${producto.nombre} se agregó a tu bolsa 🧶`);
+            navigate('/catalogo');
+        } catch (error) {
+            console.error("Error al agregar:", error);
+            alert("No pudimos agregar el producto");
+        } finally {
+            setAgregando(false);
+        }
+    };
+
+    if (loading) return (
+        <Container className="text-center mt-5">
+            <Spinner animation="border" variant="success" />
+        </Container>
+    );
+
+    if (!producto) return <Container className="mt-5 text-center"><h3>Producto no encontrado</h3></Container>;
+
+    return (
+        <Container className="mt-5 mb-5">
+            <Row className="align-items-center">
+                {/* IMAGEN */}
+                <Col md={6} className="text-center mb-4 mb-md-0">
+                    <Card className="border-0 shadow-sm overflow-hidden">
+                        <Card.Img 
+                            src={producto.imagen} 
+                            alt={producto.nombre} 
+                            style={{ objectFit: 'cover', maxHeight: '500px' }}
+                        />
+                    </Card>
+                </Col>
+
+                {/* INFO */}
+                <Col md={6} className="ps-md-5">
+                    <Badge bg="success" className="mb-2">Nuevo Lanzamiento</Badge>
+                    <h1 className="display-4 fw-bold text-dark">{producto.nombre}</h1>
+                    <h3 className="text-success fw-bold mb-4">
+                        {formatearPrecio(producto.precio)}
+                    </h3>
+                    
+                    <p className="lead text-muted mb-4">
+                        {producto.descripcion}
+                    </p>
+
+                    <div className="mb-4">
+                        <span className="fw-bold d-block mb-2">Disponibilidad:</span>
+                        {producto.stock > 0 ? (
+                            <Badge bg="info" className="p-2">
+                                {producto.stock} unidades listas para envío en Maipú
+                            </Badge>
+                        ) : (
+                            <Badge bg="danger" className="p-2">Agotado temporalmente</Badge>
+                        )}
+                    </div>
+
+                    <div className="d-grid gap-2">
+                        <Button 
+                            variant="dark" 
+                            size="lg" 
+                            className="rounded-pill py-3 fw-bold shadow"
+                            disabled={producto.stock === 0 || agregando}
+                            onClick={handleAgregarCarrito}
+                        >
+                            {agregando ? 'Agregando...' : 'Agregar al Carrito'}
+                        </Button>
+                        <Button 
+                            variant="outline-secondary" 
+                            className="rounded-pill"
+                            onClick={() => navigate('/catalogo')}
+                        >
+                            Volver al catálogo
+                        </Button>
+                    </div>
+
+                    <p className="small text-center text-muted mt-3">
+                        <i className="bi bi-truck me-2"></i> 
+                        Envío gratis en compras sobre $30.000 (Solo Maipú)
+                    </p>
+                </Col>
+            </Row>
+        </Container>
+    );
+}

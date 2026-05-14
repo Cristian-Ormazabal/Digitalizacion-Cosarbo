@@ -1,111 +1,147 @@
 import React, { useState } from 'react';
-import { Container, Card, Form, Button, Row, Col } from 'react-bootstrap';
+import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 
 const Registro = () => {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    nombre: '',
-    apellido: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
+    const [formData, setFormData] = useState({
+        nombre: '',
+        correo: '',
+        password: '',
+        confirmarPassword: ''
+    });
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Las contraseñas no coinciden");
-      return;
-    }
-    console.log("Datos enviados:", formData);
-    // Aquí irá la conexión al Backend
-    alert("¡Registro exitoso! Ahora puedes iniciar sesión.");
-    navigate('/login');
-  };
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    };
 
-  return (
-    <Container className="d-flex align-items-center justify-content-center py-5" style={{ minHeight: '80vh' }}>
-      <Card className="login-card shadow border-0 w-100" style={{ maxWidth: '500px' }}>
-        <Card.Body className="p-4">
-          <div className="text-center mb-4">
-            <h2 className="fw-bold text-success">Crear Cuenta</h2>
-            <p className="text-muted small">Únete a la comunidad de Cosarbo</p>
-          </div>
+    const handleRegistro = async (e) => {
+        e.preventDefault();
+        setError('');
 
-          <Form onSubmit={handleSubmit}>
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label className="small fw-bold">Nombre</Form.Label>
-                  <Form.Control 
-                    required
-                    type="text" 
-                    placeholder="Ej: Brayan" 
-                    className="form-control-custom"
-                    onChange={(e) => setFormData({...formData, nombre: e.target.value})}
-                  />
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label className="small fw-bold">Apellido</Form.Label>
-                  <Form.Control 
-                    required
-                    type="text" 
-                    placeholder="Ej: Soto" 
-                    className="form-control-custom"
-                    onChange={(e) => setFormData({...formData, apellido: e.target.value})}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
+        // Validación básica de contraseñas en el cliente
+        if (formData.password !== formData.confirmarPassword) {
+            setError('Las contraseñas no coinciden');
+            return;
+        }
 
-            <Form.Group className="mb-3">
-              <Form.Label className="small fw-bold">Correo Electrónico</Form.Label>
-              <Form.Control 
-                required
-                type="email" 
-                placeholder="correo@ejemplo.com" 
-                className="form-control-custom"
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
-              />
-            </Form.Group>
+        try {
+            // Enviamos los datos al endpoint /registrar que configuramos en el Controller
+            // Solo enviamos nombre, correo y password (lo que espera el UsuarioRegistroDTO)
+            const response = await axios.post('http://localhost:8080/api/v1/usuarios/registrar', {
+                nombre: formData.nombre,
+                correo: formData.correo,
+                password: formData.password
+            });
 
-            <Form.Group className="mb-3">
-              <Form.Label className="small fw-bold">Contraseña</Form.Label>
-              <Form.Control 
-                required
-                type="password" 
-                placeholder="********" 
-                className="form-control-custom"
-                onChange={(e) => setFormData({...formData, password: e.target.value})}
-              />
-            </Form.Group>
+            // El backend nos devuelve el UsuarioDTO del nuevo usuario con su idCarrito
+            const user = response.data;
 
-            <Form.Group className="mb-4">
-              <Form.Label className="small fw-bold">Confirmar Contraseña</Form.Label>
-              <Form.Control 
-                required
-                type="password" 
-                placeholder="********" 
-                className="form-control-custom"
-                onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-              />
-            </Form.Group>
+            // Guardamos los datos para dejar la sesión iniciada de inmediato
+            localStorage.setItem('user_id', user.idUsuario);
+            localStorage.setItem('cart_id', user.idCarrito);
+            localStorage.setItem('user_name', user.nombre);
+            localStorage.setItem('user_role', user.rol);
 
-            <Button type="submit" className="btn-artesanal w-100 rounded-pill py-2 mb-3 shadow-sm">
-              Registrarse
-            </Button>
+            alert("¡Cuenta creada con éxito!");
+            navigate('/login');
 
-            <div className="text-center small mt-3">
-              ¿Ya tienes una cuenta? <Link to="/login" className="text-success fw-bold text-decoration-none">Inicia sesión aquí</Link>
+        } catch (error) {
+            console.error("Error en registro:", error);
+            // IMPORTANTE: No guardes 'error.response.data' directamente en un estado que se renderice
+            // si ese data es un objeto complejo de Spring.
+            setError(error.response?.data?.message || "Error al conectar con el servidor");
+        }
+    };
+
+    return (
+        <div className="container mt-5">
+            <div className="row justify-content-center">
+                <div className="col-md-6">
+                    <div className="card shadow-lg border-0">
+                        <div className="card-body p-5">
+                            <h2 className="text-center mb-4 fw-bold">Crear Cuenta</h2>
+                            <p className="text-center text-muted mb-4">Únete a la comunidad de Cosarbo</p>
+
+                            {error && (
+                                <div className="alert alert-danger py-2 text-center" role="alert">
+                                    {error}
+                                </div>
+                            )}
+
+                            <form onSubmit={handleRegistro}>
+                                <div className="mb-3">
+                                    <label className="form-label">Nombre Completo</label>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        name="nombre"
+                                        placeholder="Tu nombre"
+                                        value={formData.nombre}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label">Correo Electrónico</label>
+                                    <input
+                                        type="email"
+                                        className="form-control"
+                                        name="correo"
+                                        placeholder="ejemplo@correo.com"
+                                        value={formData.correo}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="row">
+                                    <div className="col-md-6 mb-3">
+                                        <label className="form-label">Contraseña</label>
+                                        <input
+                                            type="password"
+                                            className="form-control"
+                                            name="password"
+                                            placeholder="********"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="col-md-6 mb-4">
+                                        <label className="form-label">Confirmar</label>
+                                        <input
+                                            type="password"
+                                            className="form-control"
+                                            name="confirmarPassword"
+                                            placeholder="********"
+                                            value={formData.confirmarPassword}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <button type="submit" className="btn btn-success w-100 py-2 fw-bold shadow-sm">
+                                    Registrarse
+                                </button>
+                            </form>
+
+                            <div className="text-center mt-4">
+                                <span className="text-muted">¿Ya tienes cuenta? </span>
+                                <Link to="/login" className="text-decoration-none fw-bold">Inicia sesión</Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </Form>
-        </Card.Body>
-      </Card>
-    </Container>
-  );
+        </div>
+    );
 };
 
 export default Registro;

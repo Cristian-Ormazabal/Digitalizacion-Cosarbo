@@ -1,21 +1,26 @@
-import React, { useContext, useState } from 'react';
-import { Navbar, Nav, Container, NavDropdown, Badge } from 'react-bootstrap';
-import { Link, useNavigate } from 'react-router-dom';
-import { CartContext } from '../context/CartContext';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
 
-const NavbarShared = () => {
-  const { cart } = useContext(CartContext);
+const NavbarCustom = () => {
+  const [userName, setUserName] = useState(null);
+  const [totalItems, setTotalItems] = useState(0); // Puedes conectar esto a un estado global luego
+  const location = useLocation();
   const navigate = useNavigate();
-  
-  // SIMULACIÓN DE ESTADO: Cambiar a 'true' para ver cómo queda logueado
-  const [isLoggedIn, setIsLoggedIn] = useState(true); 
-  const [userName, setUserName] = useState("Brayan");
 
-  const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+  // EFECTO CRUCIAL: Se dispara cada vez que cambias de página
+  useEffect(() => {
+    const name = localStorage.getItem('user_name');
+    setUserName(name);
+    
+    // Aquí también podrías actualizar la cantidad de items del carrito
+    // Por ahora lo dejamos en 0 o lo que tengas en storage
+  }, [location]);
 
   const handleLogout = () => {
-    setIsLoggedIn(true);
-    navigate('/');
+    localStorage.clear();
+    setUserName(null);
+    navigate('/login');
   };
 
   return (
@@ -48,8 +53,8 @@ const NavbarShared = () => {
               )}
             </Nav.Link>
 
-            {/* LÓGICA CONDICIONAL DE USUARIO */}
-            {!isLoggedIn ? (
+            {/* LÓGICA CONDICIONAL DE USUARIO - Ahora usa userName del estado */}
+            {!userName ? (
               <>
                 <Nav.Link as={Link} to="/login" className="btn-outline-artesanal px-4 rounded-pill me-2">
                   Ingresar
@@ -79,4 +84,4 @@ const NavbarShared = () => {
   );
 };
 
-export default NavbarShared;
+export default NavbarCustom;
