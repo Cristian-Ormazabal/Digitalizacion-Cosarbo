@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+// import axios from 'axios';
+import api from '../../api/apiConfig';
 import { Container, Row, Col, Button, Badge, Spinner, Card } from 'react-bootstrap';
 
 const formatearPrecio = (precio) => {
@@ -21,7 +22,7 @@ export default function DetallesProducto() {
         const fetchProducto = async () => {
             try {
                 // Endpoint para traer un solo producto por ID
-                const response = await axios.get(`http://localhost:8080/api/v1/productos/${id}`);
+                const response = await api.get(`/api/v1/productos/${id}`);
                 setProducto(response.data);
                 setLoading(false);
             } catch (error) {
@@ -43,7 +44,7 @@ export default function DetallesProducto() {
         setAgregando(true);
         try {
             // Estructura para tu ItemCarrito (ajusta según tu backend)
-            await axios.post('http://localhost:8080/api/v1/items-carrito', {
+            await api.post('/api/v1/items-carrito', {
                 idCarrito: parseInt(cartId),
                 idProducto: producto.idProducto,
                 cantidad: 1,

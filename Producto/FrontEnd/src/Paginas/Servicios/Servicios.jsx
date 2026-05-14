@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
+import api from '../../api/apiConfig';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css'; // Estilos necesarios para el calendario
 import { Container, Row, Col, Card, Button, Badge, ListGroup, Spinner, Alert, Modal } from 'react-bootstrap';
@@ -21,7 +22,7 @@ const Servicios = () => {
     useEffect(() => {
         const fetchServicios = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/v1/servicios-costura');
+                const response = await api.get('/api/v1/servicios-costura');
                 setServicios(response.data);
                 setLoading(false);
             } catch (err) {
@@ -37,7 +38,7 @@ const Servicios = () => {
     const abrirAgenda = async (servicio) => {
         setServicioSeleccionado(servicio);
         try {
-            const res = await axios.get('http://localhost:8080/api/v1/reservas/ocupadas');
+            const res = await api.get('/api/v1/reservas/ocupadas');
             // Convertimos las fechas del backend a strings para comparar fácilmente
             const ocupadas = res.data.map(fecha => 
                 {
@@ -80,7 +81,7 @@ const Servicios = () => {
                 fechaReserva: fechaFormateada // Formato YYYY-MM-DD
             };
 
-            await axios.post('http://localhost:8080/api/v1/reservas/agendar', reserva);
+            await api.post('/api/v1/reservas/agendar', reserva);
             alert(`¡Cita confirmada! Te esperamos el ${fechaSeleccionada.toLocaleDateString()} para tu ${servicioSeleccionado.tipoPrenda}.`);
             setShowModal(false);
         } catch (err) {

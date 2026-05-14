@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
+import api from '../../api/apiConfig';
 import { useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
@@ -23,7 +24,7 @@ const Login = () => {
 
         try {
             // Llamada al endpoint v1 que definimos en el UsuarioController
-            const response = await axios.post('http://localhost:8080/api/v1/usuarios/login', formData);
+            const response = await api.post('/api/v1/usuarios/login', formData);
             
             // response.data contiene nuestro UsuarioDTO
             const user = response.data;

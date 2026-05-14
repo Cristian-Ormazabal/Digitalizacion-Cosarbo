@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
+import api from '../../api/apiConfig';
 import { Carousel, Container, Row, Col, Card, Button, Badge } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,7 +16,7 @@ const Home = () => {
   useEffect(() => {
     const obtenerProductosRecientes = async () => {
       try {
-          const response = await axios.get('http://localhost:8080/api/v1/productos');
+          const response = await api.get('/api/v1/productos');
           
           // REVISIÓN AQUÍ: Axios guarda la respuesta en .data
           // Usamos una copia [...response.data] porque .reverse() modifica el original

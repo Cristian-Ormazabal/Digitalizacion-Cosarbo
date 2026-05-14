@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
+import api from '../../api/apiConfig';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Form, Button, Table, Card, Spinner } from 'react-bootstrap';
 
@@ -41,7 +42,7 @@ export default function Checkout() {
         const fetchCarrito = async () => {
             try {
                 // Usamos tu endpoint de items-carrito filtrado por el carrito actual
-                const response = await axios.get(`http://localhost:8080/api/v1/items-carrito/carrito/${cartId}`);
+                const response = await api.get(`/api/v1/items-carrito/carrito/${cartId}`);
                 setItemsCarrito(response.data);
                 setIsLoading(false);
             } catch (error) {
@@ -65,8 +66,8 @@ export default function Checkout() {
 
         try {
             // Enviamos el formData al backend para procesar la "compra"
-            const response = await axios.post(
-                `http://localhost:8080/api/v1/usuarios/${userId}/finalizar-compra`,
+            const response = await api.post(
+                `/api/v1/usuarios/${userId}/finalizar-compra`,
                 formData
             );
 

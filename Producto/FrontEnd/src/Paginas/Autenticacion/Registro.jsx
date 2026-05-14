@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
+import api from '../../api/apiConfig';
 import { useNavigate, Link } from 'react-router-dom';
 
 const Registro = () => {
@@ -32,7 +33,7 @@ const Registro = () => {
         try {
             // Enviamos los datos al endpoint /registrar que configuramos en el Controller
             // Solo enviamos nombre, correo y password (lo que espera el UsuarioRegistroDTO)
-            const response = await axios.post('http://localhost:8080/api/v1/usuarios/registrar', {
+            const response = await api.post('/api/v1/usuarios/registrar', {
                 nombre: formData.nombre,
                 correo: formData.correo,
                 password: formData.password

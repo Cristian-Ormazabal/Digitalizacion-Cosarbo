@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
+import api from '../../api/apiConfig';
 import { useParams, Link } from 'react-router-dom';
 import { Container, Card, Table, Button, Spinner, Alert } from 'react-bootstrap';
 
@@ -22,7 +23,7 @@ export default function PagoRealizado() {
         const fetchDetalleCompra = async () => {
             try {
                 // Consultamos los items del carrito que se acaba de comprar
-                const response = await axios.get(`http://localhost:8080/api/v1/items-carrito/carrito/${ordenId}`);
+                const response = await api.get(`/api/v1/items-carrito/carrito/${ordenId}`);
                 
                 // Verificamos que lleguen datos
                 if (response.data) {

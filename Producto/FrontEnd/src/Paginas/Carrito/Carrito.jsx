@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
+import api from '../../api/apiConfig';
 import { Container, Row, Col, Table, Button, Card, Image, Alert, Spinner } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -13,7 +14,7 @@ const Carrito = () => {
     // 1. Cargar los items del carrito desde el backend
     const fetchItems = async () => {
         try {
-            const res = await axios.get(`http://localhost:8080/api/v1/items-carrito/carrito/${cartId}`);
+            const res = await api.get(`/api/v1/items-carrito/carrito/${cartId}`);
             setItems(res.data);
             setLoading(false);
         } catch (err) {
@@ -35,7 +36,7 @@ const Carrito = () => {
     const handleCantidad = async (idItem, nuevaCantidad) => {
         if (nuevaCantidad < 1) return;
         try {
-            await axios.put(`http://localhost:8080/api/v1/items-carrito/${idItem}/cantidad?nuevaCantidad=${nuevaCantidad}`);
+            await api.put(`/api/v1/items-carrito/${idItem}/cantidad?nuevaCantidad=${nuevaCantidad}`);
             fetchItems(); // Recarga para actualizar subtotales y totales
         } catch (err) {
             console.error("Error al actualizar cantidad:", err);
@@ -46,7 +47,7 @@ const Carrito = () => {
     const eliminarItem = async (idItem) => {
         if (!window.confirm("¿Deseas quitar este amigurumi del carrito?")) return;
         try {
-            await axios.delete(`http://localhost:8080/api/v1/items-carrito/${idItem}`);
+            await api.delete(`/api/v1/items-carrito/${idItem}`);
             fetchItems();
         } catch (err) {
             console.error("Error al eliminar el producto:", err);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
+import api from '../../api/apiConfig';
 import { useNavigate } from 'react-router-dom'; // Importante para la navegación
 import { Container, Row, Col, Card, Button, Badge, Spinner, Alert } from 'react-bootstrap';
 
@@ -13,7 +14,7 @@ const Catalogo = () => {
     useEffect(() => {
         const fetchProductos = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/v1/productos');
+                const response = await api.get('/api/v1/productos');
                 setProductos(response.data);
                 setLoading(false);
             } catch (err) {
@@ -43,7 +44,7 @@ const Catalogo = () => {
                 subTotal: producto.precio
             };
 
-            const response = await axios.post('http://localhost:8080/api/v1/items-carrito', itemNuevo);
+            const response = await api.post('/api/v1/items-carrito', itemNuevo);
             
             if (response.status === 200 || response.status === 201) {
                 alert(`¡${producto.nombre} añadido con éxito!`);
