@@ -28,6 +28,4 @@ public class ServicioCostura {
     @Column(name = "tiempo_estimado")
     private String tiempoEstimado;
 
-    @Column(name = "estado_cupo")
-    private String estadoCupo;
 }

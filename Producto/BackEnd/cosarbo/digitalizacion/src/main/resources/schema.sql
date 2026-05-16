@@ -48,7 +48,6 @@ CREATE TABLE IF NOT EXISTS servicio_costura (
     descripcion TEXT         NOT NULL,
     costo       INT          NOT NULL,
     tiempo_estimado VARCHAR(50) NOT NULL,
-    estado_cupo VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS carrito (
