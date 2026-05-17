@@ -4,6 +4,7 @@ import com.cosarbo.digitalizacion.entities.Usuario;
 import com.cosarbo.digitalizacion.entities.itemCarrito;
 import com.cosarbo.digitalizacion.entities.Carrito;
 import com.cosarbo.digitalizacion.entities.Producto;
+import com.cosarbo.digitalizacion.dto.UsuarioActualizacionDTO;
 import com.cosarbo.digitalizacion.dto.UsuarioDTO;
 import com.cosarbo.digitalizacion.repositories.itemCarritoRepository;
 import com.cosarbo.digitalizacion.repositories.UsuarioRepository;
@@ -12,6 +13,7 @@ import com.cosarbo.digitalizacion.repositories.ProductoRepository;
 import com.cosarbo.digitalizacion.services.PedidoService;
 import com.cosarbo.digitalizacion.services.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder; // <-- IMPORTANTE
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +39,9 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Autowired
     private PedidoService pedidoService;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder; 
+
     @Override
     public List<Usuario> listarTodos() {
         return usuarioRepository.findAll();
@@ -44,6 +49,10 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public Usuario guardar(Usuario usuario) {
+        // Encriptar si se guarda o actualiza desde un flujo genérico
+        if (usuario.getPassword() != null && !usuario.getPassword().startsWith("$2a$")) {
+            usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        }
         return usuarioRepository.save(usuario);
     }
 
@@ -68,7 +77,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         List<itemCarrito> items = itemCarritoRepository.findByCarrito(carritoActual);
         
-        // --- NUEVA LÓGICA DE STOCK ---
         for (itemCarrito item : items) {
             Producto producto = item.getProducto();
             int cantidadComprada = item.getCantidad();
@@ -77,13 +85,10 @@ public class UsuarioServiceImpl implements UsuarioService {
                 throw new RuntimeException("Lo sentimos, no hay suficiente stock de: " + producto.getNombre());
             }
             
-            // Restamos la cantidad y guardamos el nuevo stock
             producto.setStock(producto.getStock() - cantidadComprada);
             productoRepository.save(producto);
         }
-        // ------------------------------
 
-        // El resto del código sigue igual...
         Double totalVenta = items.stream()
                 .mapToDouble(i -> i.getSubTotal() * i.getCantidad())
                 .sum();
@@ -93,7 +98,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         pedidoService.crearPedido(carritoActual.getIdCarrito(), datosEnvio, totalVenta);
 
-        // Relevo de carrito...
         Carrito nuevoCarrito = new Carrito();
         nuevoCarrito.setUsuario(usuario);
         nuevoCarrito.setEstado("PENDIENTE");
@@ -108,9 +112,11 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public UsuarioDTO login(String correo, String password) {
-        Optional<Usuario> userOpt = usuarioRepository.findByCorreoAndPassword(correo, password);
+        // Se busca al usuario únicamente por correo electrónico
+        Optional<Usuario> userOpt = usuarioRepository.findByCorreo(correo);
 
-        if (userOpt.isPresent()) {
+        // Si el usuario existe y la contraseña coincide usando BCrypt
+        if (userOpt.isPresent() && passwordEncoder.matches(password, userOpt.get().getPassword())) {
             Usuario user = userOpt.get();
             UsuarioDTO dto = new UsuarioDTO();
             dto.setIdUsuario(user.getIdUsuario());
@@ -118,7 +124,6 @@ public class UsuarioServiceImpl implements UsuarioService {
             dto.setCorreo(user.getCorreo());
             dto.setRol(user.getRol());
 
-            // Al loguear, buscamos si tiene un carrito pendiente o creamos uno
             Carrito carrito = carritoRepository.findByUsuarioAndEstado(user, "PENDIENTE")
                     .orElseGet(() -> {
                         Carrito nuevo = new Carrito();
@@ -130,8 +135,9 @@ public class UsuarioServiceImpl implements UsuarioService {
             dto.setIdCarrito(carrito.getIdCarrito());
             return dto;
         }
-        return null;
+        return null; // Retorna null si el correo no existe o la contraseña no coincide
     }
+
     public List<Carrito> listarVentasRealizadas() {
         return carritoRepository.findByEstadoOrderByEstadoDesc("COMPRADO");
     }
@@ -139,30 +145,50 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     @Transactional
     public UsuarioDTO registrarNuevoUsuario(Usuario usuario) {
-        // 1. Verificar si el correo ya existe
         if (usuarioRepository.findByCorreo(usuario.getCorreo()).isPresent()) {
             throw new RuntimeException("El correo ya está registrado");
         }
 
-        // 2. Asignar rol por defecto
         usuario.setRol("CLIENTE");
 
-        // 3. Guardar el usuario para generar su ID
+        // Se encripta la contraseña en formato Hash antes de persistir en la BD
+        String passwordEncriptada = passwordEncoder.encode(usuario.getPassword());
+        usuario.setPassword(passwordEncriptada);
+
         Usuario usuarioGuardado = usuarioRepository.save(usuario);
 
-        // 4. CREAR EL CARRITO INICIAL (Vital para Cosarbo)
         Carrito carritoInicial = new Carrito();
         carritoInicial.setUsuario(usuarioGuardado);
         carritoInicial.setEstado("PENDIENTE");
         Carrito carritoGuardado = carritoRepository.save(carritoInicial);
 
-        // 5. Retornar el DTO para el Frontend
         UsuarioDTO dto = new UsuarioDTO();
         dto.setIdUsuario(usuarioGuardado.getIdUsuario());
         dto.setNombre(usuarioGuardado.getNombre());
         dto.setRol(usuarioGuardado.getRol());
+        dto.setCorreo(usuarioGuardado.getCorreo());
         dto.setIdCarrito(carritoGuardado.getIdCarrito());
 
         return dto;
+    }
+
+    @Override
+    @Transactional
+    public void actualizarUsuario(Integer idUsuario, UsuarioActualizacionDTO dto) {
+        // Buscar que el usuario exista
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con el ID: " + idUsuario));
+
+        // Actualizar campos básicos
+        usuario.setNombre(dto.getNombre());
+        usuario.setCorreo(dto.getCorreo());
+
+        // Validar si escribió una nueva contraseña
+        if (dto.getPassword() != null && !dto.getPassword().trim().isEmpty()) {
+            usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+
+        // Guardar cambios en la base de datos
+        usuarioRepository.save(usuario);
     }
 }

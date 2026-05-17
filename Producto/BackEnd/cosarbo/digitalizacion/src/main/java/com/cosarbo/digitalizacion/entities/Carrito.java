@@ -24,7 +24,6 @@ public class Carrito {
     @JoinColumn(name = "id_usuario")
     private Usuario usuario;
 
-    // Constructor vacío requerido por JPA
     public Carrito() {}
 
     // Getters y Setters

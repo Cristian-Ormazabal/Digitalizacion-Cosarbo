@@ -3,6 +3,7 @@ package com.cosarbo.digitalizacion.entities;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "pedidos")
@@ -11,14 +12,15 @@ public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_pedido")
+    @JsonProperty("idPedido")
     private Integer idPedido;
 
-    // Relación OneToOne con Carrito: Un pedido pertenece a un carrito específico
     @OneToOne
     @JoinColumn(name = "id_carrito", nullable = false)
     private Carrito carrito;
 
     @Column(name = "nombre_receptor", nullable = false, length = 150)
+    @JsonProperty("nombreReceptor") 
     private String nombreReceptor;
 
     @Column(name = "correo_contacto", length = 100)
@@ -28,21 +30,22 @@ public class Pedido {
     private String direccion;
 
     @Column(nullable = false, length = 100)
+    @JsonProperty("comuna") 
     private String comuna;
 
     @Column(name = "fecha_venta")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonProperty("fechaVenta") 
     private LocalDateTime fechaVenta;
 
     @Column(name = "total_pagado")
+    @JsonProperty("totalPagado") 
     private Double totalPagado;
 
-    // Constructor vacío (Obligatorio para JPA)
     public Pedido() {
-        this.fechaVenta = LocalDateTime.now(); // Se asigna la fecha actual al crear el objeto
+        this.fechaVenta = LocalDateTime.now(); 
     }
 
-    // Constructor con parámetros
     public Pedido(Carrito carrito, String nombreReceptor, String correoContacto, String direccion, String comuna, Double totalPagado) {
         this.carrito = carrito;
         this.nombreReceptor = nombreReceptor;

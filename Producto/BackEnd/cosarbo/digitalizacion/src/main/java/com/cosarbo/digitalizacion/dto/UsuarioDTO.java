@@ -1,23 +1,16 @@
 package com.cosarbo.digitalizacion.dto;
 
-/**
- * Data Transfer Object para Usuario.
- * Se utiliza para enviar información al Frontend de forma segura,
- * omitiendo datos sensibles como la contraseña.
- */
 public class UsuarioDTO {
 
     private Integer idUsuario;
     private String nombre;
     private String correo;
     private String rol;
-    private Integer idCarrito; // ID del carrito con estado 'PENDIENTE'
+    private Integer idCarrito; 
 
-    // Constructor vacío (necesario para la serialización de JSON)
     public UsuarioDTO() {
     }
-
-    // Constructor con parámetros (opcional, por si quieres instanciarlo rápido)
+ 
     public UsuarioDTO(Integer idUsuario, String nombre, String correo, String rol, Integer idCarrito) {
         this.idUsuario = idUsuario;
         this.nombre = nombre;

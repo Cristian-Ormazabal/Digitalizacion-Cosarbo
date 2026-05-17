@@ -3,6 +3,7 @@ package com.cosarbo.digitalizacion.entities;
 import jakarta.persistence.*;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "producto")
@@ -11,44 +12,47 @@ public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_producto")
+    @JsonProperty("idProducto")
     private Integer idProducto;
 
     @Column(nullable = false, length = 100)
+    @JsonProperty("nombre")
     private String nombre;
 
-    // @Column(columnDefinition = "TEXT")
-    // private String descripcion;
+    @Column(columnDefinition = "TEXT")
+    @JsonProperty("descripcion")
+    private String descripcion;
 
     @Column(nullable = false)
+    @JsonProperty("precio")
     private Double precio;
 
     @Column(nullable = false)
+    @JsonProperty("stock")
     private Integer stock;
 
-    // @Column(name = "imagen_url")
-    // private String imagenUrl;
+    @Column(name = "imagen")
+    @JsonProperty("imagen")
+    private String imagen;
 
-    // @Column(length = 50)
-    // private String categoria; // Ejemplo: 'Amigurumi', 'Accesorio', 'Lana'
-
-    // Relación con los items del carrito (Opcional, para evitar recursividad en JSON)
-    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<itemCarrito> items;
 
-    // Constructor vacío
     public Producto() {
     }
 
-    // Constructor con parámetros
-    public Producto(Integer idProducto, String nombre, Double precio, Integer stock) {
+    public Producto(Integer idProducto, String nombre, Double precio, Integer stock, String descripcion, String imagen) {
         this.idProducto = idProducto;
         this.nombre = nombre;
         this.precio = precio;
         this.stock = stock;
+        this.descripcion = descripcion;
+        this.imagen = imagen;
     }
 
     // Getters y Setters
+
     public Integer getIdProducto() {
         return idProducto;
     }
@@ -65,13 +69,13 @@ public class Producto {
         this.nombre = nombre;
     }
 
-    // public String getDescripcion() {
-    //     return descripcion;
-    // }
+    public String getDescripcion() {
+        return descripcion;
+    }
 
-    // public void setDescripcion(String descripcion) {
-    //     this.descripcion = descripcion;
-    // }
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 
     public Double getPrecio() {
         return precio;
@@ -89,21 +93,13 @@ public class Producto {
         this.stock = stock;
     }
 
-    // public String getImagenUrl() {
-    //     return imagenUrl;
-    // }
+    public String getImagen() {
+        return imagen;
+    }
 
-    // public void setImagenUrl(String imagenUrl) {
-    //     this.imagenUrl = imagenUrl;
-    // }
-
-    // public String getCategoria() {
-    //     return categoria;
-    // }
-
-    // public void setCategoria(String categoria) {
-    //       this.categoria = categoria;
-    // }
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
+    }
 
     public List<itemCarrito> getItems() {
         return items;

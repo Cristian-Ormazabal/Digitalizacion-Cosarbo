@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-// import axios from 'axios';
 import api from '../../api/apiConfig';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Form, Button, Table, Card, Spinner } from 'react-bootstrap';
@@ -27,13 +26,11 @@ export default function Checkout() {
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
-    // Obtenemos los IDs de la sesión
-    const cartId = localStorage.getItem('cart_id');
-    const userId = localStorage.getItem('user_id');
+    const cartId = localStorage.getItem('cartId');
+    const userId = localStorage.getItem('userId');
 
     useEffect(() => {
-        // Validación de seguridad: si no hay carrito o usuario, volver atrás
-        if (!cartId || !userId) {
+        if (!cartId || cartId === "undefined" || !userId) {
             alert("Sesión no válida o carrito vacío.");
             navigate('/catalogo');
             return;
@@ -41,13 +38,13 @@ export default function Checkout() {
 
         const fetchCarrito = async () => {
             try {
-                // Usamos tu endpoint de items-carrito filtrado por el carrito actual
                 const response = await api.get(`/api/v1/items-carrito/carrito/${cartId}`);
-                setItemsCarrito(response.data);
+                setItemsCarrito(Array.isArray(response.data) ? response.data : []);
                 setIsLoading(false);
             } catch (error) {
                 console.error("Error al cargar el resumen del checkout:", error);
-                setIsLoading(false);
+                alert("Error al conectar con los servicios de Cosarbo.");
+                navigate('/carrito');
             }
         };
         fetchCarrito();
@@ -58,45 +55,38 @@ export default function Checkout() {
     };
 
     const handlePagarAhora = async () => {
-        // Validaciones básicas antes de enviar
         if (!formData.nombre || !formData.correo || !formData.calle) {
             alert('Por favor, completa los campos obligatorios (Nombre, Correo y Calle).');
             return;
         }
 
         try {
-            // Enviamos el formData al backend para procesar la "compra"
             const response = await api.post(
                 `/api/v1/usuarios/${userId}/finalizar-compra`,
                 formData
             );
 
-            // EL RELEVO: 
-            // El backend nos devuelve el ID del NUEVO carrito vacío en 'idCarrito'
             const nuevoIdCarrito = response.data.idCarrito;
             
-            // Actualizamos el localStorage para que el usuario empiece con carrito limpio
-            localStorage.setItem('cart_id', nuevoIdCarrito);
+            localStorage.setItem('cartId', nuevoIdCarrito);
 
-            // Redirigimos a la página de éxito usando el ID del carrito que ACABAMOS DE PAGAR
             navigate(`/pagorealizado/${cartId}`);
 
         } catch (error) {
             console.error("Error al procesar el pago:", error);
-            // Si falla, enviamos al usuario a la página de error con sus datos para que no los pierda
             navigate('/pagofallido', { state: { formData, items: itemsCarrito } });
         }
     };
 
     const totalCarrito = itemsCarrito.reduce((total, item) => 
-        total + (item.subTotal * item.cantidad), 0
+        total + (item.subTotal || 0), 0
     );
 
     if (isLoading) {
         return (
             <Container className="text-center mt-5">
                 <Spinner animation="border" variant="success" />
-                <p>Preparando tu orden de amigurumis...</p>
+                <p className="mt-2 text-success">Preparando tu orden de amigurumis... 🧶</p>
             </Container>
         );
     }
@@ -108,7 +98,7 @@ export default function Checkout() {
                 {/* COLUMNA IZQUIERDA: FORMULARIO */}
                 <Col lg={7}>
                     <Card className="p-4 border-0 shadow-sm mb-4">
-                        <h4 className="mb-4">Datos de Despacho</h4>
+                        <h4 className="mb-4 text-dark">Datos de Despacho</h4>
                         <Form>
                             <Row>
                                 <Col md={6}>
@@ -182,10 +172,10 @@ export default function Checkout() {
                 {/* COLUMNA DERECHA: RESUMEN */}
                 <Col lg={5}>
                     <Card className="p-4 border-0 shadow-sm bg-light">
-                        <h4 className="fw-bold mb-4">Resumen del Pedido</h4>
-                        <Table responsive size="sm" className="mb-4">
+                        <h4 className="fw-bold mb-4 text-dark">Resumen del Pedido</h4>
+                        <Table responsive size="sm" className="mb-4 align-middle">
                             <thead>
-                                <tr>
+                                <tr className="text-muted small text-uppercase">
                                     <th>Amigurumi</th>
                                     <th className="text-center">Cant.</th>
                                     <th className="text-end">Total</th>
@@ -194,9 +184,11 @@ export default function Checkout() {
                             <tbody>
                                 {itemsCarrito.map(item => (
                                     <tr key={item.idItem}>
-                                        <td className="small">{item.producto.nombre}</td>
-                                        <td className="text-center">{item.cantidad}</td>
-                                        <td className="text-end">{formatearPrecio(item.subTotal * item.cantidad)}</td>
+                                        <td className="small fw-bold text-dark">{item.producto?.nombre}</td>
+                                        <td className="text-center small">{item.cantidad}</td>
+                                        <td className="text-end text-success fw-bold">
+                                            {formatearPrecio(item.subTotal)}
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -210,13 +202,14 @@ export default function Checkout() {
                         <Button 
                             variant="success" 
                             size="lg" 
-                            className="w-100 mt-4 rounded-pill fw-bold shadow"
+                            className="w-100 mt-4 rounded-pill fw-bold shadow-sm py-2"
                             onClick={handlePagarAhora}
+                            disabled={itemsCarrito.length === 0}
                         >
                             Confirmar y Pagar
                         </Button>
-                        <p className="text-center text-muted small mt-3">
-                            <i className="bi bi-shield-lock-fill"></i> Transacción segura para Cosarbo
+                        <p className="text-center text-muted small mt-3 mb-0">
+                            <i className="bi bi-shield-lock-fill me-1"></i> Transacción segura para Cosarbo
                         </p>
                     </Card>
                 </Col>

@@ -18,8 +18,6 @@ const Home = () => {
       try {
           const response = await api.get('/api/v1/productos');
           
-          // REVISIÓN AQUÍ: Axios guarda la respuesta en .data
-          // Usamos una copia [...response.data] porque .reverse() modifica el original
           const ultimosProductos = [...response.data]
               .reverse() 
               .slice(0, 4); 
@@ -93,19 +91,15 @@ const Home = () => {
       </Container>
 
       {/* 2. CATEGORÍAS */}
-      <Container className="my-5 text-center">
+      <Container className="my-5 text-center ">
         <Row>
-          <Col md={4}>
+          <Col md={6}>
             <Button onClick={() => navigate('/catalogo')} className="category-circle mb-3 mx-auto shadow" style={{ width: '150px', height: '150px', backgroundColor: '#CCD5AE', borderRadius: '50%' }}></Button>
             <h4>Amigurumis</h4>
           </Col>
-          <Col md={4}>
+          <Col md={6}>
             <Button onClick={() => navigate('/servicios')} className="category-circle mb-3 mx-auto shadow" style={{ width: '150px', height: '150px', backgroundColor: '#D4A373', borderRadius: '50%' }}></Button>
             <h4>Costura</h4>
-          </Col>
-          <Col md={4}>
-            <Button onClick={() => navigate('/especiales')} className="category-circle mb-3 mx-auto shadow" style={{ width: '150px', height: '150px', backgroundColor: '#E9EDC6', borderRadius: '50%' }}></Button>
-            <h4>Especiales</h4>
           </Col>
         </Row>
       </Container>

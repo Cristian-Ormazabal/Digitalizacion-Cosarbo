@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 const NotFound = () => {
   return (
     <Container className="text-center py-5 d-flex flex-column align-items-center justify-content-center" style={{ minHeight: '70vh' }}>
-      {/* Proximamente un icono realizado con cosarbo */}
       <i className="bi bi-patch-question text-success" style={{ fontSize: '6rem', opacity: 0.5 }}></i>
       
       <h1 className="display-1 fw-bold text-success">404</h1>

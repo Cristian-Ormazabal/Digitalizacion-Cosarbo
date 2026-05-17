@@ -11,7 +11,7 @@ import java.util.Optional;
 @Repository
 public interface CarritoRepository extends JpaRepository<Carrito, Integer> {
     
-    // Busca todos los carritos de un usuario (para filtrar el PENDIENTE en el Service/Controller)
+    // Busca todos los carritos de un usuario
     List<Carrito> findByUsuario_IdUsuario(Integer idUsuario);
     Optional<Carrito> findByUsuarioAndEstado(Usuario usuario, String estadoPedido);
     // Busca todos los carritos que ya fueron pagados

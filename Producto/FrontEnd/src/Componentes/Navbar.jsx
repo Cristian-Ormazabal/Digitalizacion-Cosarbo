@@ -4,22 +4,25 @@ import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap';
 
 const NavbarCustom = () => {
   const [userName, setUserName] = useState(null);
-  const [totalItems, setTotalItems] = useState(0); // Puedes conectar esto a un estado global luego
+  const [userRole, setUserRole] = useState(null); 
+  const [totalItems, setTotalItems] = useState(0); 
   const location = useLocation();
   const navigate = useNavigate();
 
-  // EFECTO CRUCIAL: Se dispara cada vez que cambias de página
+  // Se dispara cada vez que cambias de página
   useEffect(() => {
     const name = localStorage.getItem('user_name');
-    setUserName(name);
+    const role = localStorage.getItem('user_role'); 
     
-    // Aquí también podrías actualizar la cantidad de items del carrito
-    // Por ahora lo dejamos en 0 o lo que tengas en storage
+    setUserName(name);
+    setUserRole(role); 
+    
   }, [location]);
 
   const handleLogout = () => {
     localStorage.clear();
     setUserName(null);
+    setUserRole(null); 
     navigate('/login');
   };
 
@@ -37,6 +40,18 @@ const NavbarCustom = () => {
             <Nav.Link as={Link} to="/servicios" className="nav-link-custom">Servicios de Costura</Nav.Link>
             <Nav.Link as={Link} to="/catalogo" className="nav-link-custom">Amigurumis</Nav.Link>
             <Nav.Link as={Link} to="/nosotros" className="nav-link-custom">Nosotros</Nav.Link>
+            
+            {/*Si el usuario está logueado Y es ADMIN, ve esta opción en el menú principal */}
+            {userName && userRole === 'ADMIN' && (
+              <Nav.Link 
+                as={Link} 
+                to="/admin" 
+                className="nav-link-custom fw-bold text-danger border border-danger rounded-pill px-3 ms-lg-2 mt-2 mt-lg-0 text-center"
+                style={{ backgroundColor: '#fff5f5' }}
+              >
+                ⚙️ Panel Admin
+              </Nav.Link>
+            )}
           </Nav>
 
           <Nav className="align-items-center">
@@ -53,7 +68,7 @@ const NavbarCustom = () => {
               )}
             </Nav.Link>
 
-            {/* LÓGICA CONDICIONAL DE USUARIO - Ahora usa userName del estado */}
+            {/* LÓGICA CONDICIONAL DE USUARIO */}
             {!userName ? (
               <>
                 <Nav.Link as={Link} to="/login" className="btn-outline-artesanal px-4 rounded-pill me-2">
@@ -71,6 +86,8 @@ const NavbarCustom = () => {
               >
                 <NavDropdown.Item as={Link} to="/perfil">Mi Perfil</NavDropdown.Item>
                 <NavDropdown.Item as={Link} to="/pedidos">Mis Pedidos / Costuras</NavDropdown.Item>
+                
+
                 <NavDropdown.Divider />
                 <NavDropdown.Item onClick={handleLogout} className="text-danger">
                   <i className="bi bi-box-arrow-right me-2"></i>Cerrar Sesión

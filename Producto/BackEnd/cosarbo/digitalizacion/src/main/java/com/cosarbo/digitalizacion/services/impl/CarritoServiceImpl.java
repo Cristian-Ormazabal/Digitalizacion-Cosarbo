@@ -23,15 +23,15 @@ public class CarritoServiceImpl implements CarritoService {
     @Override
     @Transactional
     public Carrito obtenerOCrearCarritoActivo(Integer usuarioId) {
-        // Buscamos todos los carritos del usuario
+        // Se buscan todos los carritos del usuario
         List<Carrito> carritos = carritoRepository.findByUsuario_IdUsuario(usuarioId);
 
-        // Filtramos el que esté PENDIENTE
+        // Se filtra el que esté PENDIENTE
         return carritos.stream()
                 .filter(c -> "PENDIENTE".equals(c.getEstado()))
                 .findFirst()
                 .orElseGet(() -> {
-                    // Si no hay, creamos el relevo
+                    // Si no hay, se crea el relevo
                     Carrito nuevo = new Carrito();
                     Usuario user = usuarioRepository.findById(usuarioId)
                             .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -61,7 +61,7 @@ public class CarritoServiceImpl implements CarritoService {
             productoRepository.save(p);
         }
 
-        // Cerramos el carrito
+        // Se cierra el carrito
         carrito.setEstado("COMPLETADO");
         carritoRepository.save(carrito);
     }

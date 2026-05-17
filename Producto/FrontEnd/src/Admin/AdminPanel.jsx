@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-// import axios from 'axios';
-import api from '../api/apiConfig'
+import api from '../api/apiConfig'; 
 import { Container, Table, Button, Badge, Card, Spinner, Row, Col, Modal, Form, Tabs, Tab } from 'react-bootstrap';
 
 export default function AdminPanel() {
@@ -10,6 +9,10 @@ export default function AdminPanel() {
     const [showModal, setShowModal] = useState(false);
     const [servicios, setServicios] = useState([]);
     const [showModalServicio, setShowModalServicio] = useState(false);
+    
+    // Para capturar el archivo binario de la imagen seleccionada
+    const [archivoFoto, setArchivoFoto] = useState(null);
+
     const [servicioEdit, setServicioEdit] = useState({
         idServicio: null,
         tipoPrenda: '',
@@ -18,7 +21,6 @@ export default function AdminPanel() {
         estadoCupo: 'Disponible'
     });
     
-    // Estado para edición/creación de producto
     const [productoEdit, setProductoEdit] = useState({
         idProducto: null,
         nombre: '',
@@ -35,40 +37,73 @@ export default function AdminPanel() {
     const cargarDatos = async () => {
         setLoading(true);
         try {
+            // Se revienta la caché usando un timestamp único por milisegundo
+            const timestamp = new Date().getTime();
+
+            // Se usa 'api.get' para inyectar automáticamente el Bearer Token del Administrador
             const [resPedidos, resProductos, resServicios] = await Promise.all([
-                api.get('/api/v1/pedidos'),
-                api.get('/api/v1/productos'),
-                api.get('/api/v1/servicios-costura') // Tu nuevo endpoint
+                api.get(`/api/v1/pedidos?_=${timestamp}`),
+                api.get(`/api/v1/productos?_=${timestamp}`),
+                api.get(`/api/v1/servicios-costura?_=${timestamp}`)
             ]);
-            setPedidos(resPedidos.data);
-            setProductos(resProductos.data);
-            setServicios(resServicios.data);
+
+            setPedidos(Array.isArray(resPedidos.data) ? resPedidos.data : []);
+            setProductos(Array.isArray(resProductos.data) ? resProductos.data : []);
+            setServicios(Array.isArray(resServicios.data) ? resServicios.data : []);
             setLoading(false);
         } catch (error) {
             console.error("Error al cargar datos:", error);
+            setPedidos([]);
+            setProductos([]);
+            setServicios([]);
             setLoading(false);
         }
     };
 
+    // PROCESAMIENTO UNIFICADO PARA IMÁGENES (CREAR Y EDITAR)
     const handleSave = async (e) => {
         e.preventDefault();
+
+        // Se crea el FormData con los campos actualizados de los inputs
+        const formData = new FormData();
+        formData.append("nombre", productoEdit.nombre);
+        formData.append("descripcion", productoEdit.descripcion || "Sin descripción");
+        formData.append("precio", parseFloat(productoEdit.precio));
+        formData.append("stock", parseInt(productoEdit.stock));
+        
+        // Si el administrador seleccionó una foto en este turno, se adjunta
+        if (archivoFoto) {
+            formData.append("foto", archivoFoto);
+        }
+
         try {
-            // Si tiene idProducto, es edición (PUT), si no, es nuevo (POST)
             if (productoEdit.idProducto) {
-                await api.put(`/api/v1/productos/${productoEdit.idProducto}`, productoEdit);
+                // Se apunta al nuevo endpoint de edición enviándole el ID en la URL
+                await api.put(`/api/v1/productos/editar/${productoEdit.idProducto}`, formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                alert("¡Amigurumi actualizado con éxito! 🔄");
             } else {
-                await api.post('/api/v1/productos', productoEdit);
+                await api.post('/api/v1/productos/crear', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                alert("¡Amigurumi creado con éxito! 🚀");
             }
+            
+            // Limpieza de estados y recarga de la grilla
             setShowModal(false);
-            cargarDatos(); // Recargar tablas
+            setArchivoFoto(null); 
+            cargarDatos(); 
         } catch (error) {
-            alert("Error al guardar el producto");
+            console.error("Error al guardar producto:", error);
+            alert("Error al procesar la operación. Revisa la consola.");
         }
     };
 
     const handleSaveServicio = async (e) => {
       e.preventDefault();
         try {
+            // Se usa 'api.post'
             await api.post('/api/v1/servicios-costura', servicioEdit);
             setShowModalServicio(false);
             cargarDatos();
@@ -80,7 +115,27 @@ export default function AdminPanel() {
 
     const openEdit = (prod) => {
         setProductoEdit(prod);
+        setArchivoFoto(null); 
         setShowModal(true);
+    };
+
+    const handleEliminar = async (idProducto, nombre) => {
+        // Alerta nativa de confirmación para evitar clicks accidentales
+        const confirmar = window.confirm(`¿Estás seguro de que deseas eliminar permanentemente el amigurumi "${nombre}"?`);
+        
+        if (confirmar) {
+            try {
+                // Se llama de forma segura usando tu instancia que inyecta el Token JWT
+                const response = await api.delete(`/api/v1/productos/${idProducto}`);
+                
+                alert("Producto eliminado correctamente 🗑️");
+                cargarDatos(); // Recarga la grilla al instante para que desaparezca de la vista
+            } catch (error) {
+                console.error("Error al eliminar el producto:", error);
+                // Si el backend responde con el error de llave foránea (FK), lo muestra aquí
+                alert(error.response?.data || "No se pudo eliminar el producto del inventario.");
+            }
+        }
     };
 
     if (loading) return <Container className="text-center mt-5"><Spinner animation="border" variant="success" /></Container>;
@@ -106,7 +161,7 @@ export default function AdminPanel() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {pedidos.map(p => (
+                                    {pedidos?.map(p => (
                                         <tr key={p.idPedido}>
                                             <td>#PED-{p.idPedido}</td>
                                             <td>{p.nombreReceptor}</td>
@@ -114,7 +169,7 @@ export default function AdminPanel() {
                                             <td>{new Date(p.fechaVenta).toLocaleDateString()}</td>
                                             <td className="fw-bold">${p.totalPagado.toLocaleString('es-CL')}</td>
                                             <td>
-                                                <Button size="sm" variant="info" href={`/pagorealizado/${p.carrito.idCarrito}`}>Ver Detalle</Button>
+                                                <Button size="sm" variant="info" href={`/pagorealizado/${p.carrito?.idCarrito}`}>Ver Detalle</Button>
                                             </td>
                                         </tr>
                                     ))}
@@ -129,6 +184,7 @@ export default function AdminPanel() {
                     <div className="d-flex justify-content-end mb-3 mt-3">
                         <Button variant="success" onClick={() => {
                             setProductoEdit({ nombre: '', descripcion: '', precio: '', stock: '', imagen: '' });
+                            setArchivoFoto(null);
                             setShowModal(true);
                         }}>+ Nuevo Producto</Button>
                     </div>
@@ -147,7 +203,13 @@ export default function AdminPanel() {
                                 <tbody>
                                     {productos.map(prod => (
                                         <tr key={prod.idProducto}>
-                                            <td><img src={prod.imagen} alt={prod.nombre} style={{ width: '40px', borderRadius: '5px' }} /></td>
+                                            <td>
+                                                <img 
+                                                    src={prod.imagen || "https://via.placeholder.com/40"} 
+                                                    alt={prod.nombre} 
+                                                    style={{ width: '40px', height: '40px', borderRadius: '5px', objectFit: 'cover' }} 
+                                                />
+                                            </td>
                                             <td>{prod.nombre}</td>
                                             <td>${prod.precio.toLocaleString('es-CL')}</td>
                                             <td>
@@ -156,7 +218,15 @@ export default function AdminPanel() {
                                                 </Badge>
                                             </td>
                                             <td>
-                                                <Button size="sm" variant="outline-warning" className="me-2" onClick={() => openEdit(prod)}>Editar</Button>
+                                                {/* Botón de Editar existente */}
+                                                <Button size="sm" variant="outline-warning" className="me-2" onClick={() => openEdit(prod)}>
+                                                    Editar
+                                                </Button>
+                                                
+                                                {/* NUEVO BOTÓN DE ELIMINAR */}
+                                                <Button size="sm" variant="outline-danger" onClick={() => handleEliminar(prod.idProducto, prod.nombre)}>
+                                                    Eliminar
+                                                </Button>
                                             </td>
                                         </tr>
                                     ))}
@@ -166,6 +236,7 @@ export default function AdminPanel() {
                     </Card>
                 </Tab>
 
+                {/* SECCIÓN 3: SERVICIOS */}
                 <Tab eventKey="servicios" title="🧵 Servicios de Costura">
                   <Card className="border-0 shadow-sm mt-3">
                       <Card.Body>
@@ -205,7 +276,7 @@ export default function AdminPanel() {
               </Tab>
             </Tabs>
 
-            {/* MODAL ÚNICO PARA CREAR/EDITAR */}
+            {/* MODAL ADAPTADO PARA SUBIDA DE ARCHIVOS LOCALES */}
             <Modal show={showModal} onHide={() => setShowModal(false)} centered>
                 <Modal.Header closeButton>
                     <Modal.Title>{productoEdit.idProducto ? 'Editar' : 'Agregar'} Amigurumi</Modal.Title>
@@ -216,13 +287,23 @@ export default function AdminPanel() {
                             <Form.Label>Nombre</Form.Label>
                             <Form.Control name="nombre" value={productoEdit.nombre} onChange={(e) => setProductoEdit({...productoEdit, nombre: e.target.value})} required />
                         </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Descripción</Form.Label>
+                            <Form.Control as="textarea" rows={2} name="descripcion" value={productoEdit.descripcion} onChange={(e) => setProductoEdit({...productoEdit, descripcion: e.target.value})} />
+                        </Form.Group>
                         <Row>
                             <Col><Form.Group className="mb-3"><Form.Label>Precio</Form.Label><Form.Control type="number" name="precio" value={productoEdit.precio} onChange={(e) => setProductoEdit({...productoEdit, precio: e.target.value})} required /></Form.Group></Col>
                             <Col><Form.Group className="mb-3"><Form.Label>Stock</Form.Label><Form.Control type="number" name="stock" value={productoEdit.stock} onChange={(e) => setProductoEdit({...productoEdit, stock: e.target.value})} required /></Form.Group></Col>
                         </Row>
+                        
                         <Form.Group className="mb-3">
-                            <Form.Label>URL Imagen</Form.Label>
-                            <Form.Control name="imagen" value={productoEdit.imagen} onChange={(e) => setProductoEdit({...productoEdit, imagen: e.target.value})} />
+                            <Form.Label className="fw-bold text-success">Seleccionar Foto desde el Equipo</Form.Label>
+                            <Form.Control 
+                                type="file" 
+                                accept="image/*" 
+                                onChange={(e) => setArchivoFoto(e.target.files[0])} 
+                                required={!productoEdit.idProducto} // <-- SÓLO ES OBLIGATORIO SI EL PRODUCTO ES NUEVO
+                            />
                         </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>
@@ -270,18 +351,11 @@ export default function AdminPanel() {
                                 <option value="Pocos cupos">Pocos cupos</option>
                                 <option value="Agotado hoy">Agotado hoy</option>
                             </Form.Select>
-                            <Form.Text className="text-muted">
-                                Esto cambiará el color del Badge en la página de Servicios.
-                            </Form.Text>
                         </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={() => setShowModalServicio(false)}>
-                            Cancelar
-                        </Button>
-                        <Button variant="success" type="submit">
-                            Guardar Cambios
-                        </Button>
+                        <Button variant="secondary" onClick={() => setShowModalServicio(false)}>Cancelar</Button>
+                        <Button variant="success" type="submit">Guardar Cambios</Button>
                     </Modal.Footer>
                 </Form>
             </Modal>

@@ -34,11 +34,6 @@ public class ProductoServiceImpl implements ProductoService {
         productoRepository.deleteById(id);
     }
 
-    // @Override
-    // public List<Producto> listarPorCategoria(String categoria) {
-    //     return productoRepository.findByCategoria(categoria);
-    // }
-
     @Override
     public List<Producto> buscarPorNombre(String nombre) {
         return productoRepository.findByNombreContainingIgnoreCase(nombre);

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-// import axios from 'axios';
-import api from '../../api/apiConfig';
+import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 
 const Registro = () => {
@@ -31,30 +30,18 @@ const Registro = () => {
         }
 
         try {
-            // Enviamos los datos al endpoint /registrar que configuramos en el Controller
-            // Solo enviamos nombre, correo y password (lo que espera el UsuarioRegistroDTO)
-            const response = await api.post('/api/v1/usuarios/registrar', {
+            // Se envia los datos al endpoint /registrar que se configuró en el Controller
+            await axios.post('http://localhost:8080/api/v1/usuarios/registrar', {
                 nombre: formData.nombre,
                 correo: formData.correo,
                 password: formData.password
             });
 
-            // El backend nos devuelve el UsuarioDTO del nuevo usuario con su idCarrito
-            const user = response.data;
-
-            // Guardamos los datos para dejar la sesión iniciada de inmediato
-            localStorage.setItem('user_id', user.idUsuario);
-            localStorage.setItem('cart_id', user.idCarrito);
-            localStorage.setItem('user_name', user.nombre);
-            localStorage.setItem('user_role', user.rol);
-
-            alert("¡Cuenta creada con éxito!");
+            alert("¡Cuenta creada con éxito! 🌸 Por favor, inicia sesión con tus credenciales.");
             navigate('/login');
 
         } catch (error) {
             console.error("Error en registro:", error);
-            // IMPORTANTE: No guardes 'error.response.data' directamente en un estado que se renderice
-            // si ese data es un objeto complejo de Spring.
             setError(error.response?.data?.message || "Error al conectar con el servidor");
         }
     };
