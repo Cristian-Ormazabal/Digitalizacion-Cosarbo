@@ -31,7 +31,7 @@ const Footer = () => {
           </Col>
         </Row>
         <hr className="mt-4 bg-light" />
-        <p className="text-center mb-0 pb-3">&copy; 2026 Cosarbo - Portafolio de Título.</p>
+        <p className="text-center mb-0 pb-3">&copy; 2026 Cosarbo.</p>
       </Container>
     </footer>
   );

@@ -95,9 +95,12 @@ CREATE TABLE IF NOT EXISTS reservas (
     id_usuario INT NOT NULL,
     id_servicio INT NOT NULL,
     fecha_reserva DATE NOT NULL,
+    hora_reserva VARCHAR(5) NOT NULL,
     estado VARCHAR(20) DEFAULT 'Confirmada',
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),
     FOREIGN KEY (id_servicio) REFERENCES servicio_costura(id_servicio)
+
+    CREATE INDEX idx_fecha_hora ON reservas (fecha_reserva, hora_reserva);
 );
 
 -- ------------------------------------------------------------
@@ -113,8 +116,16 @@ VALUES ('Admin', 'admin@cosarbo.com', 'admin1234', 'admin');
 
 -- INSERT IGNORE INTO servicio_costura (tipo_prenda, descripcion, costo, tiempo_estimado, estado_cupo) 
 -- VALUES 
--- ('Basta Simple Pantalón', 'Ajuste de largo para jeans, pantalones de tela o buzos. Incluye toma de medidas.', 5000, '24 hrs', 'Disponible'),
--- ('Cambio de Cierre Parka', 'Reemplazo de cierre completo en parkas o chaquetas gruesas. No incluye el insumo.', 12000, '48-72 hrs', 'Pocos cupos'),
--- ('Ajuste de Cintura', 'Rebaje de pretina en pantalones o faldas para un calce perfecto.', 8000, '48 hrs', 'Disponible'),
--- ('Bordado de Nombre', 'Bordado personalizado para delantales escolares o pecheras de cocina.', 4500, '24 hrs', 'Agotado hoy'),
--- ('Cambio de Cierre Pantalón', 'Reparación o cambio de cierre en jeans y pantalones de vestir.', 4500, '24 hrs', 'Disponible');
+-- ('Basta Simple Jeans', 'Ajuste de largo para jeans, pantalones, faldas o buzos. Incluye toma de medidas.', 1500, '24 hrs', 'Disponible'),
+-- ('Basta Simple de Vestir', 'Ajuste de largo para pantalones de vestir. Incluye toma de medidas.', 2000, '24 hrs', 'Disponible'),
+-- ('Basta Simple a Cortinas', 'Ajuste de largo para cortinas. Incluye toma de medidas.', 2000, '48 hrs', 'Disponible'),
+-- ('Basta Vestido de Fiesta', 'Ajuste de largo para vestidos de fiesta. Incluye toma de medidas.', 4000, '72 hrs', 'Disponible'),
+-- ('Entrada Simple de Ropa sin alterar Cintura', 'Ajuste de ancho de la pierna sin alterar la cintura. Incluye toma de medidas.', 2000, '24 hrs', 'Disponible'),
+-- ('Bajar talla de ropa desde la cintura', 'Reducción de talla en ropa desde la cintura. Incluye toma de medidas.', 3000, '48 hrs', 'Disponible'),
+-- ('Entrada y basta de ropa', 'Ajuste de largo y ancho para ropa. Incluye toma de medidas.', 3000, '48 hrs', 'Disponible');
+-- ('Dar vuelta el cuello de camisas', 'Ajuste del cuello para ocultar partes desgastadas.', 2500, '48 hrs', 'Disponible');
+-- ('Cierres de Chaquetas', 'Reemplazo o ajuste de cierres en chaquetas.', 4000, '72 - 96 hrs', 'Disponible');
+-- ('Cierre de Polerones', 'Reemplazo o ajuste de cierres en polerones.', 3500, '72 - 96 hrs', 'Disponible');
+-- ('Cierres de Pantalones o Faldas', 'Reemplazo o ajuste de cierres en pantalones o faldas.', 2500, '48 hrs', 'Disponible');
+-- ('Confección de Fundas de Cojines', 'Confección de fundas para cojines a medida. Incluye toma de medidas.', 3000, '48 hrs', 'Disponible');
+-- ('Elástico a Sábanas o Ropa de Cama', 'Colocación de elástico en sábanas o ropa de cama. Incluye toma de medidas.', 3000, '48 hrs', 'Disponible');

@@ -17,12 +17,10 @@ public class Reserva {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idReserva;
 
-    // Relación con el usuario que agenda
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
-    // Relación con el servicio que se va a realizar
     @ManyToOne
     @JoinColumn(name = "id_servicio", nullable = false)
     private ServicioCostura servicio;
@@ -31,5 +29,8 @@ public class Reserva {
     private LocalDate fechaReserva;
 
     @Column(length = 20)
-    private String estado = "Confirmada"; // Confirmada, Pendiente, Cancelada, Completada
+    private String estado = "Confirmada";
+
+    @Column(name = "hora_reserva", nullable = false, length = 5)
+    private String horaReserva;
 }

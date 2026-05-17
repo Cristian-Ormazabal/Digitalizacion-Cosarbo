@@ -24,18 +24,15 @@ public class Usuario {
     private String password;
 
     @Column(length = 20)
-    private String rol; // Ejemplo: 'CLIENTE', 'ADMIN'
+    private String rol; 
 
-    // Un usuario puede tener muchos carritos a lo largo del tiempo (historial)
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore // Evita que al traer un usuario se carguen todos sus carritos anteriores en el JSON inicial
+    @JsonIgnore 
     private List<Carrito> carritos = new ArrayList<>();
 
-    // Constructor vacío (Obligatorio para JPA)
     public Usuario() {
     }
 
-    // Constructor con parámetros
     public Usuario(String nombre, String correo, String password, String rol) {
         this.nombre = nombre;
         this.correo = correo;

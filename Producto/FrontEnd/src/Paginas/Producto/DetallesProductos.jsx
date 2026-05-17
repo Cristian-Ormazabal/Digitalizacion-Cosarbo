@@ -12,7 +12,7 @@ const formatearPrecio = (precio) => {
 };
 
 export default function DetallesProducto() {
-    const { id } = useParams(); // Obtenemos el ID de la URL
+    const { id } = useParams(); 
     const navigate = useNavigate();
     const [producto, setProducto] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -21,7 +21,6 @@ export default function DetallesProducto() {
     useEffect(() => {
         const fetchProducto = async () => {
             try {
-                // Endpoint para traer un solo producto por ID
                 const response = await api.get(`/api/v1/productos/${id}`);
                 setProducto(response.data);
                 setLoading(false);
@@ -34,29 +33,36 @@ export default function DetallesProducto() {
     }, [id]);
 
     const handleAgregarCarrito = async () => {
-        const cartId = localStorage.getItem('cart_id');
-        if (!cartId) {
-            alert("Debes iniciar sesión para comprar");
-            navigate('/login');
-            return;
-        }
-
-        setAgregando(true);
         try {
-            // Estructura para tu ItemCarrito (ajusta según tu backend)
-            await api.post('/api/v1/items-carrito', {
-                idCarrito: parseInt(cartId),
-                idProducto: producto.idProducto,
-                cantidad: 1,
-                subTotal: producto.precio
-            });
-            alert(`${producto.nombre} se agregó a tu bolsa 🧶`);
-            navigate('/catalogo');
+            const carritoId = localStorage.getItem("cartId"); 
+
+            if (!carritoId || carritoId === "undefined") {
+                alert("Por favor, inicia sesión para añadir amigurumis a tu carrito. 🧶");
+                return;
+            }
+
+            const productoIdReal = parseInt(id) || parseInt(producto?.idProducto);
+
+            if (!productoIdReal || isNaN(productoIdReal)) {
+                alert("Error: No se pudo identificar el código de este amigurumi.");
+                console.error("El idProducto se calculó como NaN. Revisa 'id' de useParams o 'producto.idProducto'");
+                return;
+            }
+
+            const payload = {
+                idCarrito: parseInt(carritoId),  
+                idProducto: productoIdReal, 
+                cantidad: 1                      
+            };
+
+            console.log("✈️ Enviando amigurumi al carrito... Payload corregido:", payload);
+
+            const response = await api.post('/api/v1/carrito/agregar', payload);
+            
+            alert("¡Amigurumi añadido al carrito con éxito! 🛒🌸");
         } catch (error) {
-            console.error("Error al agregar:", error);
-            alert("No pudimos agregar el producto");
-        } finally {
-            setAgregando(false);
+            console.error("Error al añadir ítem al carrito:", error);
+            alert(error.response?.data || "Hubo un problema al procesar la solicitud en Cosarbo.");
         }
     };
 

@@ -34,15 +34,15 @@ public class PedidoServiceImpl implements PedidoService {
     @Override
     @Transactional
     public Pedido crearPedido(Integer idCarrito, Map<String, Object> datosEnvio, Double total) {
-        // Buscamos el carrito que se está pagando
+        // Se busca el carrito que se está pagando
         Carrito carrito = carritoRepository.findById(idCarrito)
                 .orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
 
-        // Creamos la instancia de Pedido (La "Foto" de la venta)
+        // Se crea la instancia de Pedido (La "Foto" de la venta)
         Pedido pedido = new Pedido();
         pedido.setCarrito(carrito);
         
-        // Mapeamos los datos que vienen desde el Checkout.jsx
+        // Se mapean los datos que vienen desde el Checkout.jsx
         String nombreCompleto = datosEnvio.get("nombre") + " " + datosEnvio.get("apellidos");
         pedido.setNombreReceptor(nombreCompleto);
         pedido.setCorreoContacto((String) datosEnvio.get("correo"));
@@ -50,7 +50,7 @@ public class PedidoServiceImpl implements PedidoService {
         pedido.setComuna((String) datosEnvio.get("comuna"));
         pedido.setTotalPagado(total);
 
-        // Guardamos en la tabla 'pedidos'
+        // Se guarda en la tabla 'pedidos'
         return pedidoRepository.save(pedido);
     }
 }

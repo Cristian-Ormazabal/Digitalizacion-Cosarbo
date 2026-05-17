@@ -1,7 +1,15 @@
 package com.cosarbo.digitalizacion.controllers;
 
 import com.cosarbo.digitalizacion.entities.Carrito;
+import com.cosarbo.digitalizacion.entities.itemCarrito;
 import com.cosarbo.digitalizacion.services.CarritoService;
+import com.cosarbo.digitalizacion.services.itemCarritoService;
+
+import com.cosarbo.digitalizacion.dto.itemCarritoDTO;
+
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +22,10 @@ public class CarritoController {
     @Autowired
     private CarritoService carritoService;
 
+    @Autowired
+    private itemCarritoService itemCarritoService;
+
     // 1. OBTENER O CREAR EL CARRITO ACTIVO
-    // Este es el endpoint que React llamará al cargar la página o al loguearse.
     @PostMapping("/usuario/{usuarioId}")
     public ResponseEntity<Carrito> obtenerOCrear(@PathVariable Integer usuarioId) {
         try {
@@ -27,7 +37,6 @@ public class CarritoController {
     }
 
     // 2. OBTENER CARRITO POR ID
-    // Útil para refrescar la vista cuando ya conocemos el ID del carrito.
     @GetMapping("/{id}")
     public ResponseEntity<Carrito> obtenerPorId(@PathVariable Integer id) {
         Carrito carrito = carritoService.obtenerPorId(id);
@@ -38,7 +47,6 @@ public class CarritoController {
     }
 
     // 3. FINALIZAR COMPRA
-    // Este endpoint ejecuta el descuento de stock y marca el carrito como COMPLETADO.
     @PostMapping("/{id}/finalizar")
     public ResponseEntity<?> finalizarCompra(@PathVariable Integer id) {
         try {
@@ -49,6 +57,31 @@ public class CarritoController {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error al procesar la compra.");
+        }
+    }
+
+    @PostMapping("/agregar")
+    public ResponseEntity<?> agregarProducto(@RequestBody Map<String, Object> payload) {
+        try {
+            Integer idCarrito = Integer.parseInt(payload.get("idCarrito").toString());
+            Integer idProducto = Integer.parseInt(payload.get("idProducto").toString());
+            Integer cantidad = Integer.parseInt(payload.get("cantidad").toString());
+
+            itemCarritoDTO nuevoItemDTO = new itemCarritoDTO();
+            nuevoItemDTO.setIdCarrito(idCarrito);
+            nuevoItemDTO.setIdProducto(idProducto);
+            nuevoItemDTO.setCantidad(cantidad);
+
+            // Se guarda el ítem de forma persistente
+            itemCarritoService.agregarProducto(nuevoItemDTO);
+            
+            List<itemCarrito> itemsActualizados = itemCarritoService.listarPorCarrito(idCarrito);
+            
+            // Se retornan los ítems directamente para que React dibuje la verdad
+            return ResponseEntity.ok(itemsActualizados);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al agregar: " + e.getMessage());
         }
     }
 }

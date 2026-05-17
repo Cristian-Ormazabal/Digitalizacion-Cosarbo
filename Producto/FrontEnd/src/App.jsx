@@ -21,6 +21,7 @@ import Carrito from './Paginas/Carrito/Carrito.jsx';
 import Servicios from './Paginas/Servicios/Servicios.jsx';
 import Nosotros from './Paginas/Nosotros/Nosotros.jsx';
 import MisPedidos from './Paginas/Pedidos/MisPedidos.jsx';
+import Perfil from './Paginas/Perfil/Perfil.jsx';
 
 import NavbarShared from './Componentes/Navbar.jsx';
 import FooterShared from './Componentes/Footer.jsx';
@@ -47,16 +48,17 @@ function App() {
               <Route path="/nosotros" element={<Nosotros />} />
 
               {/* Rutas Protegidas - Solo para usuarios autenticados */}
-              <Route element={<ProtectedRoute allowedRoles={['CLIENTE', 'admin']} />}>
+              <Route element={<ProtectedRoute allowedRoles={['CLIENTE', 'ADMIN']} />}>
                 <Route path="/carrito" element={<Carrito />} />
                 <Route path="/pedidos" element={<MisPedidos />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/pagorealizado/:ordenId" element={<PagoRealizado />} />
                 <Route path="/pagofallido" element={<PagoFallido />} />
+                <Route path="/perfil" element={<Perfil />} />
               </Route>
 
               {/* Ruta exclusivas de Admin */}
-              <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+              <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
                 <Route path="/admin" element={<AdminPanel />} />
               </Route>
 

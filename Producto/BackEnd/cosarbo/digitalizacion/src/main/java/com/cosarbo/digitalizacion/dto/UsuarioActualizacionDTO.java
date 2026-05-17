@@ -1,6 +1,6 @@
 package com.cosarbo.digitalizacion.dto;
 
-public class UsuarioRegistroDTO {
+public class UsuarioActualizacionDTO {
     private String nombre;
     private String correo;
     private String password;

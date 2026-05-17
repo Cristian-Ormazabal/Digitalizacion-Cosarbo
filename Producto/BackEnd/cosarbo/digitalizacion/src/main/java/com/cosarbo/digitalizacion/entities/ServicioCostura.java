@@ -22,7 +22,7 @@ public class ServicioCostura {
     @Column(columnDefinition = "TEXT")
     private String descripcion;
 
-    @Column(name = "costo") // Mantenemos el nombre original de tu columna
+    @Column(name = "costo") 
     private Integer costo;
 
     @Column(name = "tiempo_estimado")

@@ -7,7 +7,7 @@ public interface CarritoService {
     Carrito obtenerOCrearCarritoActivo(Integer usuarioId);
     
     // Procesa el pago, descuenta stock y marca como COMPLETADO
-    void finalizarCompra(Integer carritoId);
+    void finalizarCompra(Integer IdCarrito);
     
     // Obtiene un carrito específico por su ID
     Carrito obtenerPorId(Integer id);

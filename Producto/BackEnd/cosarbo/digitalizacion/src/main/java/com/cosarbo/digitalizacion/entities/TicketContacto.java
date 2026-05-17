@@ -19,7 +19,6 @@ public class TicketContacto {
     private String nombreUsuario; 
     private String mensaje;
 
-    // Relación de vuelta al Usuario
     @ManyToOne
     @JoinColumn(name = "id_usuario")
     private Usuario usuario;

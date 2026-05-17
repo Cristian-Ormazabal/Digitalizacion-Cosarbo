@@ -14,15 +14,12 @@ public class itemCarrito {
     @Column(name = "id_item")
     private Integer idItem;
 
-    // Relación con el Carrito
-    // Usamos FetchType.LAZY para que sea más eficiente
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_carrito", nullable = false)
     @JsonIgnoreProperties({"items", "usuario"})
     @JsonIgnore // Evita bucles infinitos en el JSON
     private Carrito carrito;
 
-    // Relación con el Producto
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_producto", nullable = false)
     private Producto producto;
@@ -33,11 +30,9 @@ public class itemCarrito {
     @Column(name = "sub_total", nullable = false)
     private Double subTotal;
 
-    // Constructor vacío (obligatorio para JPA)
     public itemCarrito() {
     }
 
-    // Constructor con parámetros
     public itemCarrito(Carrito carrito, Producto producto, Integer cantidad, Double subTotal) {
         this.carrito = carrito;
         this.producto = producto;
@@ -86,7 +81,6 @@ public class itemCarrito {
         this.subTotal = subTotal;
     }
 
-    // Método de utilidad para calcular el subtotal del ítem
     public Double getSubtotal() {
         return this.subTotal;
     }

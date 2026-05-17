@@ -15,9 +15,9 @@ public interface itemCarritoRepository extends JpaRepository<itemCarrito, Intege
     // Buscar todos los items de un carrito específico
     List<itemCarrito> findByCarrito(Carrito carrito);
 
-    // Lógica para evitar duplicados: Busca si ya existe ese producto en ese carrito
+    // Lógica para evitar duplicados
     Optional<itemCarrito> findByCarritoAndProducto(Carrito carrito, Producto producto);
 
-    // Borrar todos los items de un carrito (útil al vaciar o finalizar compra)
+    // Borrar todos los items de un carrito
     void deleteByCarrito(Carrito carrito);
 }
