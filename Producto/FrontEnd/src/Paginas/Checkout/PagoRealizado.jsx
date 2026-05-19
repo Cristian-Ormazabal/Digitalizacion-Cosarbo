@@ -39,7 +39,7 @@ export default function PagoRealizado() {
         }
     }, [ordenId]);
 
-    const totalPagado = items.reduce((acc, item) => acc + (item.subTotal * item.cantidad), 0);
+    const totalPagado = items.reduce((acc, item) => acc + (item.subTotal), 0);
 
     if (isLoading) {
         return (
@@ -88,7 +88,7 @@ export default function PagoRealizado() {
                                                 <small className="text-muted">Tejido a mano con amor</small>
                                             </td>
                                             <td className="text-center">{item.cantidad}</td>
-                                            <td className="text-end">{formatearPrecio(item.subTotal * item.cantidad)}</td>
+                                            <td className="text-end">{formatearPrecio(item.subTotal)}</td>
                                         </tr>
                                     ))
                                 ) : (
