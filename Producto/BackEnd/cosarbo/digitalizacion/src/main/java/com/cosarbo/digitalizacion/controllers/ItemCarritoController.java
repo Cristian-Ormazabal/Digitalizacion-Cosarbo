@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/items-carrito")
-@CrossOrigin(origins = {"http://localhost:5173", "https://cosarbo.netlify.app"})
+@CrossOrigin(origins = {"http://localhost:5173", "https://cosarbo2.netlify.app"})
 public class ItemCarritoController {
 
     @Autowired

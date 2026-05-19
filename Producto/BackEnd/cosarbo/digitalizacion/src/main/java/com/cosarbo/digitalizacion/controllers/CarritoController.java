@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/carrito")
-@CrossOrigin(origins = {"http://localhost:5173", "https://cosarbo.netlify.app"})
+@CrossOrigin(origins = {"http://localhost:5173", "https://cosarbo2.netlify.app"})
 public class CarritoController {
 
     @Autowired
