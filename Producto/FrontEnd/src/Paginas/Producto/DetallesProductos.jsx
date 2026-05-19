@@ -83,7 +83,7 @@ export default function DetallesProducto() {
                         <Card.Img 
                             src={producto.imagen} 
                             alt={producto.nombre} 
-                            style={{ objectFit: 'cover', maxHeight: '500px' }}
+                            style={{ objectFit: 'responsive', maxHeight: '100%' }}
                         />
                     </Card>
                 </Col>

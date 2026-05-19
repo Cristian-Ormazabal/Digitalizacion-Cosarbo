@@ -99,17 +99,18 @@ CREATE TABLE IF NOT EXISTS reservas (
     fecha_reserva DATE NOT NULL,
     hora_reserva VARCHAR(5) NOT NULL,
     estado VARCHAR(20) DEFAULT 'Confirmada',
+
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),
-    FOREIGN KEY (id_servicio) REFERENCES servicio_costura(id_servicio),
+    FOREIGN KEY (id_servicio) REFERENCES servicio_costura(id_servicio)
 );
-CREATE INDEX idx_fecha_hora ON reservas (fecha_reserva, hora_reserva);
+-- CREATE INDEX idx_fecha_hora ON reservas (fecha_reserva, hora_reserva);
 
 -- ------------------------------------------------------------
 --  DATO ADMIN PRINCIPAL
 -- ------------------------------------------------------------
 
 INSERT IGNORE INTO usuarios (nombre, correo, password, rol) 
-VALUES ('Admin', 'admin@cosarbo.com', 'admin1234', 'admin');
+VALUES ('Admin', 'admin@cosarbo.com', '$2a$10$gt.39NfniUJVLn0edCbIHu7SS.6x3SxgG73E.A8ZfYBlgLAyYeo.i', 'ADMIN');
 
 -- ------------------------------------------------------------
 --  DATOS DE PRUEBA PARA SERVICIOS DE COSTURA

@@ -86,7 +86,7 @@ const Catalogo = () => {
                                     variant="top" 
                                     src={prod.imagen || 'https://placehold.co/400x400?text=Cosarbo+Amigurumi'} 
                                     alt={prod.nombre}
-                                    style={{ height: '280px', objectFit: 'cover', cursor: 'pointer' }}
+                                    style={{ height: '350px', objectFit: 'responsive', cursor: 'pointer' }}
                                     onClick={() => navigate(`/producto/${prod.idProducto}`)} 
                                 />
                                 {prod.stock <= 0 && (
