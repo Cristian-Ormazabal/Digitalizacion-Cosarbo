@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 //import axios from 'axios';
-import api from '../../apiConfig';
+import api from '../../api/apiConfig';
 import { useNavigate, Link } from 'react-router-dom';
 
 const Registro = () => {
