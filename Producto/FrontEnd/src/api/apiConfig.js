@@ -6,6 +6,7 @@ const api = axios.create({
     baseURL: window.location.hostname === 'localhost' 
         ? 'http://localhost:8080' 
         : 'https://tu-backend-en-la-nube.com'
+
 });
 
 // Interceptor de peticiones (Mantiene el token inyectado)
