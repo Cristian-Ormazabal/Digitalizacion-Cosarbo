@@ -41,174 +41,176 @@ class UsuarioServiceImplTest {
 
     @InjectMocks
     private UsuarioServiceImpl service;
-}
-
-@Test
-void debeListarUsuarios() {
-    when(usuarioRepository.findAll())
-            .thenReturn(List.of(new Usuario(), new Usuario()));
-
-    List<Usuario> resultado = service.listarTodos();
-
-    assertEquals(2, resultado.size());
-
-    verify(usuarioRepository).findAll();
-}
 
 
-@Test
-void debeGuardarUsuarioEncriptandoPassword() {
-    Usuario usuario = new Usuario();
-    usuario.setPassword("123456");
+        @Test
+        void debeListarUsuarios() {
+        when(usuarioRepository.findAll())
+                .thenReturn(List.of(new Usuario(), new Usuario()));
 
-    when(passwordEncoder.encode("123456"))
-            .thenReturn("hash123");
+        List<Usuario> resultado = service.listarTodos();
 
-    when(usuarioRepository.save(usuario))
-            .thenReturn(usuario);
+        assertEquals(2, resultado.size());
 
-    Usuario resultado = service.guardar(usuario);
-
-    assertEquals("hash123", resultado.getPassword());
-
-    verify(passwordEncoder).encode("123456");
-    verify(usuarioRepository).save(usuario);
-}
-
-@Test
-void debeObtenerUsuarioPorId() {
-    Usuario usuario = new Usuario();
-
-    when(usuarioRepository.findById(1))
-            .thenReturn(Optional.of(usuario));
-
-    Usuario resultado = service.obtenerPorId(1);
-
-    assertNotNull(resultado);
-}
-
-@Test
-void debeEliminarUsuario() {
-    service.eliminar(1);
-
-    verify(usuarioRepository).deleteById(1);
-}
+        verify(usuarioRepository).findAll();
+        }
 
 
-@Test
-void debeIniciarSesionCorrectamente() {
+        @Test
+        void debeGuardarUsuarioEncriptandoPassword() {
+        Usuario usuario = new Usuario();
+        usuario.setPassword("123456");
 
-    Usuario usuario = new Usuario();
-    usuario.setIdUsuario(1);
-    usuario.setNombre("Juan");
-    usuario.setCorreo("juan@test.com");
-    usuario.setRol("CLIENTE");
-    usuario.setPassword("hash");
+        when(passwordEncoder.encode("123456"))
+                .thenReturn("hash123");
 
-    Carrito carrito = new Carrito();
-    carrito.setIdCarrito(10);
+        when(usuarioRepository.save(usuario))
+                .thenReturn(usuario);
 
-    when(usuarioRepository.findByCorreo("juan@test.com"))
-            .thenReturn(Optional.of(usuario));
+        Usuario resultado = service.guardar(usuario);
 
-    when(passwordEncoder.matches("1234", "hash"))
-            .thenReturn(true);
+        assertEquals("hash123", resultado.getPassword());
 
-    when(carritoRepository.findByUsuarioAndEstado(usuario, "PENDIENTE"))
-            .thenReturn(Optional.of(carrito));
+        verify(passwordEncoder).encode("123456");
+        verify(usuarioRepository).save(usuario);
+        }
 
-    UsuarioDTO dto = service.login("juan@test.com", "1234");
+        @Test
+        void debeObtenerUsuarioPorId() {
+        Usuario usuario = new Usuario();
 
-    assertNotNull(dto);
-    assertEquals(1, dto.getIdUsuario());
-    assertEquals(10, dto.getIdCarrito());
-}
+        when(usuarioRepository.findById(1))
+                .thenReturn(Optional.of(usuario));
 
-@Test
-void debeRetornarNullSiPasswordIncorrecta() {
+        Usuario resultado = service.obtenerPorId(1);
 
-    Usuario usuario = new Usuario();
-    usuario.setPassword("hash");
+        assertNotNull(resultado);
+        }
 
-    when(usuarioRepository.findByCorreo("correo"))
-            .thenReturn(Optional.of(usuario));
+        @Test
+        void debeEliminarUsuario() {
+        service.eliminar(1);
 
-    when(passwordEncoder.matches("mala", "hash"))
-            .thenReturn(false);
-
-    UsuarioDTO resultado = service.login("correo", "mala");
-
-    assertNull(resultado);
-}
+        verify(usuarioRepository).deleteById(1);
+        }
 
 
-@Test
-void debeRegistrarNuevoUsuario() {
+        @Test
+        void debeIniciarSesionCorrectamente() {
 
-    Usuario usuario = new Usuario();
-    usuario.setNombre("Ana");
-    usuario.setCorreo("ana@test.com");
-    usuario.setPassword("1234");
+        Usuario usuario = new Usuario();
+        usuario.setIdUsuario(1);
+        usuario.setNombre("Juan");
+        usuario.setCorreo("juan@test.com");
+        usuario.setRol("CLIENTE");
+        usuario.setPassword("hash");
 
-    when(usuarioRepository.findByCorreo(usuario.getCorreo()))
-            .thenReturn(Optional.empty());
+        Carrito carrito = new Carrito();
+        carrito.setIdCarrito(10);
 
-    when(passwordEncoder.encode("1234"))
-            .thenReturn("hash");
+        when(usuarioRepository.findByCorreo("juan@test.com"))
+                .thenReturn(Optional.of(usuario));
 
-    when(usuarioRepository.save(any(Usuario.class)))
-            .thenAnswer(i -> i.getArgument(0));
+        when(passwordEncoder.matches("1234", "hash"))
+                .thenReturn(true);
 
-    Carrito carrito = new Carrito();
-    carrito.setIdCarrito(5);
+        when(carritoRepository.findByUsuarioAndEstado(usuario, "PENDIENTE"))
+                .thenReturn(Optional.of(carrito));
 
-    when(carritoRepository.save(any(Carrito.class)))
-            .thenReturn(carrito);
+        UsuarioDTO dto = service.login("juan@test.com", "1234");
 
-    UsuarioDTO resultado = service.registrarNuevoUsuario(usuario);
+        assertNotNull(dto);
+        assertEquals(1, dto.getIdUsuario());
+        assertEquals(10, dto.getIdCarrito());
+        }
 
-    assertEquals("CLIENTE", usuario.getRol());
-    assertEquals(5, resultado.getIdCarrito());
-}
+        @Test
+        void debeRetornarNullSiPasswordIncorrecta() {
 
-@Test
-void debeLanzarErrorSiCorreoYaExiste() {
+        Usuario usuario = new Usuario();
+        usuario.setPassword("hash");
 
-    Usuario usuario = new Usuario();
-    usuario.setCorreo("existente@test.com");
+        when(usuarioRepository.findByCorreo("correo"))
+                .thenReturn(Optional.of(usuario));
 
-    when(usuarioRepository.findByCorreo(usuario.getCorreo()))
-            .thenReturn(Optional.of(new Usuario()));
+        when(passwordEncoder.matches("mala", "hash"))
+                .thenReturn(false);
 
-    RuntimeException error = assertThrows(
-        RuntimeException.class,
-        () -> service.registrarNuevoUsuario(usuario)
-    );
+        UsuarioDTO resultado = service.login("correo", "mala");
 
-    assertEquals("El correo ya está registrado", error.getMessage());
-}
+        assertNull(resultado);
+        }
 
-@Test
-void debeActualizarUsuarioConNuevaPassword() {
 
-    Usuario usuario = new Usuario();
+        @Test
+        void debeRegistrarNuevoUsuario() {
 
-    UsuarioActualizacionDTO dto = new UsuarioActualizacionDTO();
-    dto.setNombre("Pedro");
-    dto.setCorreo("pedro@test.com");
-    dto.setPassword("1234");
+        Usuario usuario = new Usuario();
+        usuario.setNombre("Ana");
+        usuario.setCorreo("ana@test.com");
+        usuario.setPassword("1234");
 
-    when(usuarioRepository.findById(1))
-            .thenReturn(Optional.of(usuario));
+        when(usuarioRepository.findByCorreo(usuario.getCorreo()))
+                .thenReturn(Optional.empty());
 
-    when(passwordEncoder.encode("1234"))
-            .thenReturn("hash");
+        when(passwordEncoder.encode("1234"))
+                .thenReturn("hash");
 
-    service.actualizarUsuario(1, dto);
+        when(usuarioRepository.save(any(Usuario.class)))
+                .thenAnswer(i -> i.getArgument(0));
 
-    assertEquals("Pedro", usuario.getNombre());
-    assertEquals("pedro@test.com", usuario.getCorreo());
-    assertEquals("hash", usuario.getPassword());
+        Carrito carrito = new Carrito();
+        carrito.setIdCarrito(5);
 
-    verify(usuarioRepository).save(usuario);
+        when(carritoRepository.save(any(Carrito.class)))
+                .thenReturn(carrito);
+
+        UsuarioDTO resultado = service.registrarNuevoUsuario(usuario);
+
+        assertEquals("CLIENTE", usuario.getRol());
+        assertEquals(5, resultado.getIdCarrito());
+        }
+
+        @Test
+        void debeLanzarErrorSiCorreoYaExiste() {
+
+        Usuario usuario = new Usuario();
+        usuario.setCorreo("existente@test.com");
+
+        when(usuarioRepository.findByCorreo(usuario.getCorreo()))
+                .thenReturn(Optional.of(new Usuario()));
+
+        RuntimeException error = assertThrows(
+                RuntimeException.class,
+                () -> service.registrarNuevoUsuario(usuario)
+        );
+
+        assertEquals("El correo ya está registrado", error.getMessage());
+        }
+
+        @Test
+        void debeActualizarUsuarioConNuevaPassword() {
+
+        Usuario usuario = new Usuario();
+
+        UsuarioActualizacionDTO dto = new UsuarioActualizacionDTO();
+        dto.setNombre("Pedro");
+        dto.setCorreo("pedro@test.com");
+        dto.setPassword("1234");
+
+        when(usuarioRepository.findById(1))
+                .thenReturn(Optional.of(usuario));
+
+        when(passwordEncoder.encode("1234"))
+                .thenReturn("hash");
+
+        service.actualizarUsuario(1, dto);
+
+        assertEquals("Pedro", usuario.getNombre());
+        assertEquals("pedro@test.com", usuario.getCorreo());
+        assertEquals("hash", usuario.getPassword());
+
+        verify(usuarioRepository).save(usuario);
+        }
+
 }

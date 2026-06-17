@@ -28,97 +28,99 @@ class PedidoServiceImplTest {
     @InjectMocks
     private PedidoServiceImpl service;
 
-}
 
-@Test
-void debeListarTodosLosPedidos() {
 
-    List<Pedido> pedidos = new ArrayList<>();
-    pedidos.add(new Pedido());
+        @Test
+        void debeListarTodosLosPedidos() {
 
-    when(pedidoRepository.findAllByOrderByFechaVentaDesc())
-            .thenReturn(pedidos);
+        List<Pedido> pedidos = new ArrayList<>();
+        pedidos.add(new Pedido());
 
-    List<Pedido> resultado = service.listarTodos();
+        when(pedidoRepository.findAllByOrderByFechaVentaDesc())
+                .thenReturn(pedidos);
 
-    assertEquals(1, resultado.size());
+        List<Pedido> resultado = service.listarTodos();
 
-    verify(pedidoRepository)
-            .findAllByOrderByFechaVentaDesc();
-}
+        assertEquals(1, resultado.size());
 
-@Test
-void debeObtenerPedidoPorId() {
+        verify(pedidoRepository)
+                .findAllByOrderByFechaVentaDesc();
+        }
 
-    Pedido pedido = new Pedido();
+        @Test
+        void debeObtenerPedidoPorId() {
 
-    when(pedidoRepository.findById(1))
-            .thenReturn(Optional.of(pedido));
+        Pedido pedido = new Pedido();
 
-    Pedido resultado = service.obtenerPorId(1);
+        when(pedidoRepository.findById(1))
+                .thenReturn(Optional.of(pedido));
 
-    assertNotNull(resultado);
+        Pedido resultado = service.obtenerPorId(1);
 
-    verify(pedidoRepository).findById(1);
-}
+        assertNotNull(resultado);
 
-@Test
-void debeRetornarNullSiPedidoNoExiste() {
+        verify(pedidoRepository).findById(1);
+        }
 
-    when(pedidoRepository.findById(1))
-            .thenReturn(Optional.empty());
+        @Test
+        void debeRetornarNullSiPedidoNoExiste() {
 
-    Pedido resultado = service.obtenerPorId(1);
+        when(pedidoRepository.findById(1))
+                .thenReturn(Optional.empty());
 
-    assertNull(resultado);
-}
+        Pedido resultado = service.obtenerPorId(1);
 
-@Test
-void debeCrearPedidoCorrectamente() {
+        assertNull(resultado);
+        }
 
-    Carrito carrito = new Carrito();
+        @Test
+        void debeCrearPedidoCorrectamente() {
 
-    Map<String, Object> datos = new HashMap<>();
-    datos.put("nombre", "Juan");
-    datos.put("apellidos", "Perez");
-    datos.put("correo", "juan@test.com");
-    datos.put("calle", "Av. Siempre Viva 123");
-    datos.put("comuna", "Santiago");
+        Carrito carrito = new Carrito();
 
-    when(carritoRepository.findById(1))
-            .thenReturn(Optional.of(carrito));
+        Map<String, Object> datos = new HashMap<>();
+        datos.put("nombre", "Juan");
+        datos.put("apellidos", "Perez");
+        datos.put("correo", "juan@test.com");
+        datos.put("calle", "Av. Siempre Viva 123");
+        datos.put("comuna", "Santiago");
 
-    when(pedidoRepository.save(any(Pedido.class)))
-            .thenAnswer(invocation -> invocation.getArgument(0));
+        when(carritoRepository.findById(1))
+                .thenReturn(Optional.of(carrito));
 
-    Pedido resultado = service.crearPedido(1, datos, 25000.0);
+        when(pedidoRepository.save(any(Pedido.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
-    assertEquals("Juan Perez", resultado.getNombreReceptor());
-    assertEquals("juan@test.com", resultado.getCorreoContacto());
-    assertEquals("Av. Siempre Viva 123", resultado.getDireccion());
-    assertEquals("Santiago", resultado.getComuna());
-    assertEquals(25000.0, resultado.getTotalPagado());
-    assertEquals(carrito, resultado.getCarrito());
+        Pedido resultado = service.crearPedido(1, datos, 25000.0);
 
-    verify(pedidoRepository)
-            .save(any(Pedido.class));
-}
+        assertEquals("Juan Perez", resultado.getNombreReceptor());
+        assertEquals("juan@test.com", resultado.getCorreoContacto());
+        assertEquals("Av. Siempre Viva 123", resultado.getDireccion());
+        assertEquals("Santiago", resultado.getComuna());
+        assertEquals(25000.0, resultado.getTotalPagado());
+        assertEquals(carrito, resultado.getCarrito());
 
-@Test
-void debeLanzarErrorSiCarritoNoExiste() {
+        verify(pedidoRepository)
+                .save(any(Pedido.class));
+        }
 
-    when(carritoRepository.findById(1))
-            .thenReturn(Optional.empty());
+        @Test
+        void debeLanzarErrorSiCarritoNoExiste() {
 
-    Map<String, Object> datos = new HashMap<>();
+        when(carritoRepository.findById(1))
+                .thenReturn(Optional.empty());
 
-    RuntimeException error = assertThrows(
-            RuntimeException.class,
-            () -> service.crearPedido(1, datos, 10000.0)
-    );
+        Map<String, Object> datos = new HashMap<>();
 
-    assertEquals("Carrito no encontrado", error.getMessage());
+        RuntimeException error = assertThrows(
+                RuntimeException.class,
+                () -> service.crearPedido(1, datos, 10000.0)
+        );
 
-    verify(pedidoRepository, never())
-            .save(any(Pedido.class));
+        assertEquals("Carrito no encontrado", error.getMessage());
+
+        verify(pedidoRepository, never())
+                .save(any(Pedido.class));
+        }
+
 }

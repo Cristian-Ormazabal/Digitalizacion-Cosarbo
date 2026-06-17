@@ -24,71 +24,73 @@ class ServicioCosturaServiceImplTest {
     @InjectMocks
     private ServicioCosturaServiceImpl service;
 
-}
 
-@Test
-void debeListarTodosLosServicios() {
 
-    List<ServicioCostura> servicios = List.of(
-            new ServicioCostura(),
-            new ServicioCostura()
-    );
+    @Test
+    void debeListarTodosLosServicios() {
 
-    when(repository.findAll())
-            .thenReturn(servicios);
+        List<ServicioCostura> servicios = List.of(
+                new ServicioCostura(),
+                new ServicioCostura()
+        );
 
-    List<ServicioCostura> resultado = service.listarServicios();
+        when(repository.findAll())
+                .thenReturn(servicios);
 
-    assertEquals(2, resultado.size());
+        List<ServicioCostura> resultado = service.listarServicios();
 
-    verify(repository).findAll();
-}
+        assertEquals(2, resultado.size());
 
-@Test
-void debeGuardarServicio() {
+        verify(repository).findAll();
+    }
 
-    ServicioCostura servicio = new ServicioCostura();
+    @Test
+    void debeGuardarServicio() {
 
-    when(repository.save(servicio))
-            .thenReturn(servicio);
+        ServicioCostura servicio = new ServicioCostura();
 
-    ServicioCostura resultado = service.guardarServicio(servicio);
+        when(repository.save(servicio))
+                .thenReturn(servicio);
 
-    assertNotNull(resultado);
+        ServicioCostura resultado = service.guardarServicio(servicio);
 
-    verify(repository).save(servicio);
-}
+        assertNotNull(resultado);
 
-@Test
-void debeObtenerServicioPorId() {
+        verify(repository).save(servicio);
+    }
 
-    ServicioCostura servicio = new ServicioCostura();
+    @Test
+    void debeObtenerServicioPorId() {
 
-    when(repository.findById(1))
-            .thenReturn(Optional.of(servicio));
+        ServicioCostura servicio = new ServicioCostura();
 
-    ServicioCostura resultado = service.obtenerPorId(1);
+        when(repository.findById(1))
+                .thenReturn(Optional.of(servicio));
 
-    assertNotNull(resultado);
+        ServicioCostura resultado = service.obtenerPorId(1);
 
-    verify(repository).findById(1);
-}
+        assertNotNull(resultado);
 
-@Test
-void debeRetornarNullSiServicioNoExiste() {
+        verify(repository).findById(1);
+    }
 
-    when(repository.findById(1))
-            .thenReturn(Optional.empty());
+    @Test
+    void debeRetornarNullSiServicioNoExiste() {
 
-    ServicioCostura resultado = service.obtenerPorId(1);
+        when(repository.findById(1))
+                .thenReturn(Optional.empty());
 
-    assertNull(resultado);
-}
+        ServicioCostura resultado = service.obtenerPorId(1);
 
-@Test
-void debeEliminarServicioPorId() {
+        assertNull(resultado);
+    }
 
-    service.eliminarServicio(1);
+    @Test
+    void debeEliminarServicioPorId() {
 
-    verify(repository).deleteById(1);
+        service.eliminarServicio(1);
+
+        verify(repository).deleteById(1);
+    }
+
 }

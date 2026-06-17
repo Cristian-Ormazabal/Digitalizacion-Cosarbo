@@ -28,7 +28,7 @@ class CarritoServiceImplTest {
     @InjectMocks
     private CarritoServiceImpl carritoService;
 
-}
+
 
 @Test
 void debeRetornarCarritoPendienteExistente() {
@@ -166,4 +166,6 @@ void debeRetornarCarritoPorId() {
     Carrito resultado = carritoService.obtenerPorId(1);
 
     assertNotNull(resultado);
+}
+
 }

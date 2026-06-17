@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,119 +31,123 @@ class itemCarritoServiceImplTest {
 
     @InjectMocks
     private itemCarritoServiceImpl service;
-}
 
-@Test
-void debeAgregarNuevoProductoAlCarrito() {
 
-    itemCarritoDTO dto = new itemCarritoDTO();
-    dto.setIdCarrito(1);
-    dto.setIdProducto(1);
-    dto.setCantidad(2);
+        @Test
+        void debeAgregarNuevoProductoAlCarrito() {
 
-    Carrito carrito = new Carrito();
-    carrito.setItems(new ArrayList<>());
+        itemCarritoDTO dto = new itemCarritoDTO();
+        dto.setIdCarrito(1);
+        dto.setIdProducto(1);
+        dto.setCantidad(2);
 
-    Producto producto = new Producto();
-    producto.setPrecio(100.0);
+        Carrito carrito = new Carrito();
+        carrito.setItems(new ArrayList<>());
 
-    when(carritoRepository.findById(1))
-            .thenReturn(Optional.of(carrito));
+        Producto producto = new Producto();
+        producto.setPrecio(100.0);
 
-    when(productoRepository.findById(1))
-            .thenReturn(Optional.of(producto));
+        when(carritoRepository.findById(1))
+                .thenReturn(Optional.of(carrito));
 
-    when(itemCarritoRepository.findByCarritoAndProducto(carrito, producto))
-            .thenReturn(Optional.empty());
+        when(productoRepository.findById(1))
+                .thenReturn(Optional.of(producto));
 
-    when(itemCarritoRepository.save(any(itemCarrito.class)))
-            .thenAnswer(i -> i.getArgument(0));
+        when(itemCarritoRepository.findByCarritoAndProducto(carrito, producto))
+                .thenReturn(Optional.empty());
 
-    itemCarrito resultado = service.agregarProducto(dto);
+        when(itemCarritoRepository.save(any(itemCarrito.class)))
+                .thenAnswer(i -> i.getArgument(0));
 
-    assertEquals(2, resultado.getCantidad());
-    assertEquals(200.0, resultado.getSubTotal());
+        itemCarrito resultado = service.agregarProducto(dto);
 
-    verify(itemCarritoRepository).save(any(itemCarrito.class));
-}
+        assertEquals(2, resultado.getCantidad());
+        assertEquals(200.0, resultado.getSubTotal());
 
-@Test
-void debeAumentarCantidadSiProductoYaExiste() {
+        verify(itemCarritoRepository).save(any(itemCarrito.class));
+        }
 
-    itemCarritoDTO dto = new itemCarritoDTO();
-    dto.setCantidad(3);
+        @Test
+        void debeAumentarCantidadSiProductoYaExiste() {
 
-    Carrito carrito = new Carrito();
+        itemCarritoDTO dto = new itemCarritoDTO();
+        dto.setIdCarrito(1);
+        dto.setIdProducto(1);
+        dto.setCantidad(3);
 
-    Producto producto = new Producto();
-    producto.setPrecio(50.0);
+        Carrito carrito = new Carrito();
 
-    itemCarrito item = new itemCarrito();
-    item.setCantidad(2);
-    item.setProducto(producto);
+        Producto producto = new Producto();
+        producto.setPrecio(50.0);
 
-    when(carritoRepository.findById(anyInt()))
-            .thenReturn(Optional.of(carrito));
+        itemCarrito item = new itemCarrito();
+        item.setCantidad(2);
+        item.setProducto(producto);
 
-    when(productoRepository.findById(anyInt()))
-            .thenReturn(Optional.of(producto));
+        when(carritoRepository.findById(1))
+                .thenReturn(Optional.of(carrito));
 
-    when(itemCarritoRepository.findByCarritoAndProducto(carrito, producto))
-            .thenReturn(Optional.of(item));
+        when(productoRepository.findById(1))
+                .thenReturn(Optional.of(producto));
 
-    when(itemCarritoRepository.save(item))
-            .thenReturn(item);
+        when(itemCarritoRepository.findByCarritoAndProducto(carrito, producto))
+                .thenReturn(Optional.of(item));
 
-    itemCarrito resultado = service.agregarProducto(dto);
+        when(itemCarritoRepository.save(item))
+                .thenReturn(item);
 
-    assertEquals(5, resultado.getCantidad());
-    assertEquals(250.0, resultado.getSubTotal());
-}
+        itemCarrito resultado = service.agregarProducto(dto);
 
-@Test
-void debeLanzarErrorSiCarritoNoExiste() {
+        assertEquals(5, resultado.getCantidad());
+        assertEquals(250.0, resultado.getSubTotal());
+        }
 
-    itemCarritoDTO dto = new itemCarritoDTO();
-    dto.setIdCarrito(1);
+        @Test
+        void debeLanzarErrorSiCarritoNoExiste() {
 
-    when(carritoRepository.findById(1))
-            .thenReturn(Optional.empty());
+        itemCarritoDTO dto = new itemCarritoDTO();
+        dto.setIdCarrito(1);
 
-    RuntimeException error = assertThrows(
-        RuntimeException.class,
-        () -> service.agregarProducto(dto)
-    );
+        when(carritoRepository.findById(1))
+                .thenReturn(Optional.empty());
 
-    assertEquals("Carrito no encontrado", error.getMessage());
-}
+        RuntimeException error = assertThrows(
+                RuntimeException.class,
+                () -> service.agregarProducto(dto)
+        );
 
-@Test
-void debeActualizarCantidadYSubtotal() {
+        assertEquals("Carrito no encontrado", error.getMessage());
+        }
 
-    Producto producto = new Producto();
-    producto.setPrecio(80.0);
+        @Test
+        void debeActualizarCantidadYSubtotal() {
 
-    itemCarrito item = new itemCarrito();
-    item.setProducto(producto);
+        Producto producto = new Producto();
+        producto.setPrecio(80.0);
 
-    when(itemCarritoRepository.findById(1))
-            .thenReturn(Optional.of(item));
+        itemCarrito item = new itemCarrito();
+        item.setProducto(producto);
 
-    when(itemCarritoRepository.save(any()))
-            .thenAnswer(i -> i.getArgument(0));
+        when(itemCarritoRepository.findById(1))
+                .thenReturn(Optional.of(item));
 
-    itemCarrito resultado =
-            service.actualizarCantidad(1, 4);
+        when(itemCarritoRepository.save(any()))
+                .thenAnswer(i -> i.getArgument(0));
 
-    assertEquals(4, resultado.getCantidad());
-    assertEquals(320.0, resultado.getSubTotal());
-}
+        itemCarrito resultado =
+                service.actualizarCantidad(1, 4);
 
-@Test
-void debeEliminarItemPorId() {
+        assertEquals(4, resultado.getCantidad());
+        assertEquals(320.0, resultado.getSubTotal());
+        }
 
-    service.eliminar(1);
+        @Test
+        void debeEliminarItemPorId() {
 
-    verify(itemCarritoRepository)
-            .deleteById(1);
+        service.eliminar(1);
+
+        verify(itemCarritoRepository)
+                .deleteById(1);
+        }
+
 }

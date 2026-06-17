@@ -24,93 +24,95 @@ class ProductoServiceImplTest {
     @InjectMocks
     private ProductoServiceImpl service;
 
-}
 
-@Test
-void debeListarTodosLosProductos() {
 
-    Producto p1 = new Producto();
-    Producto p2 = new Producto();
+        @Test
+        void debeListarTodosLosProductos() {
 
-    when(productoRepository.findAll())
-            .thenReturn(List.of(p1, p2));
+        Producto p1 = new Producto();
+        Producto p2 = new Producto();
 
-    List<Producto> resultado = service.listarTodos();
+        when(productoRepository.findAll())
+                .thenReturn(List.of(p1, p2));
 
-    assertEquals(2, resultado.size());
+        List<Producto> resultado = service.listarTodos();
 
-    verify(productoRepository).findAll();
-}
+        assertEquals(2, resultado.size());
 
-@Test
-void debeObtenerProductoPorId() {
+        verify(productoRepository).findAll();
+        }
 
-    Producto producto = new Producto();
+        @Test
+        void debeObtenerProductoPorId() {
 
-    when(productoRepository.findById(1))
-            .thenReturn(Optional.of(producto));
+        Producto producto = new Producto();
 
-    Producto resultado = service.obtenerPorId(1);
+        when(productoRepository.findById(1))
+                .thenReturn(Optional.of(producto));
 
-    assertNotNull(resultado);
+        Producto resultado = service.obtenerPorId(1);
 
-    verify(productoRepository).findById(1);
-}
+        assertNotNull(resultado);
 
-@Test
-void debeLanzarErrorSiProductoNoExiste() {
+        verify(productoRepository).findById(1);
+        }
 
-    when(productoRepository.findById(1))
-            .thenReturn(Optional.empty());
+        @Test
+        void debeLanzarErrorSiProductoNoExiste() {
 
-    RuntimeException error = assertThrows(
-            RuntimeException.class,
-            () -> service.obtenerPorId(1)
-    );
+        when(productoRepository.findById(1))
+                .thenReturn(Optional.empty());
 
-    assertEquals(
-            "Producto no encontrado con ID: 1",
-            error.getMessage()
-    );
-}
+        RuntimeException error = assertThrows(
+                RuntimeException.class,
+                () -> service.obtenerPorId(1)
+        );
 
-@Test
-void debeGuardarProducto() {
+        assertEquals(
+                "Producto no encontrado con ID: 1",
+                error.getMessage()
+        );
+        }
 
-    Producto producto = new Producto();
+        @Test
+        void debeGuardarProducto() {
 
-    when(productoRepository.save(producto))
-            .thenReturn(producto);
+        Producto producto = new Producto();
 
-    Producto resultado = service.guardar(producto);
+        when(productoRepository.save(producto))
+                .thenReturn(producto);
 
-    assertNotNull(resultado);
+        Producto resultado = service.guardar(producto);
 
-    verify(productoRepository).save(producto);
-}
+        assertNotNull(resultado);
 
-@Test
-void debeEliminarProductoPorId() {
+        verify(productoRepository).save(producto);
+        }
 
-    service.eliminar(1);
+        @Test
+        void debeEliminarProductoPorId() {
 
-    verify(productoRepository).deleteById(1);
-}
+        service.eliminar(1);
 
-@Test
-void debeBuscarProductoPorNombre() {
+        verify(productoRepository).deleteById(1);
+        }
 
-    Producto producto = new Producto();
+        @Test
+        void debeBuscarProductoPorNombre() {
 
-    when(productoRepository
-            .findByNombreContainingIgnoreCase("camisa"))
-            .thenReturn(List.of(producto));
+        Producto producto = new Producto();
 
-    List<Producto> resultado =
-            service.buscarPorNombre("camisa");
+        when(productoRepository
+                .findByNombreContainingIgnoreCase("camisa"))
+                .thenReturn(List.of(producto));
 
-    assertEquals(1, resultado.size());
+        List<Producto> resultado =
+                service.buscarPorNombre("camisa");
 
-    verify(productoRepository)
-            .findByNombreContainingIgnoreCase("camisa");
+        assertEquals(1, resultado.size());
+
+        verify(productoRepository)
+                .findByNombreContainingIgnoreCase("camisa");
+        }
+
 }
