@@ -5,6 +5,7 @@ import com.cosarbo.digitalizacion.repositories.ServicioCosturaRepository;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -24,23 +25,19 @@ class ServicioCosturaServiceImplTest {
     @InjectMocks
     private ServicioCosturaServiceImpl service;
 
-
-
     @Test
-    void debeListarTodosLosServicios() {
+    void debeListarServicios() {
 
-        List<ServicioCostura> servicios = List.of(
+        List<ServicioCostura> lista = List.of(
                 new ServicioCostura(),
                 new ServicioCostura()
         );
 
-        when(repository.findAll())
-                .thenReturn(servicios);
+        when(repository.findAll()).thenReturn(lista);
 
         List<ServicioCostura> resultado = service.listarServicios();
 
         assertEquals(2, resultado.size());
-
         verify(repository).findAll();
     }
 
@@ -52,45 +49,45 @@ class ServicioCosturaServiceImplTest {
         when(repository.save(servicio))
                 .thenReturn(servicio);
 
-        ServicioCostura resultado = service.guardarServicio(servicio);
+        ServicioCostura resultado =
+                service.guardarServicio(servicio);
 
-        assertNotNull(resultado);
+        assertEquals(servicio, resultado);
 
         verify(repository).save(servicio);
     }
 
     @Test
-    void debeObtenerServicioPorId() {
+    void debeObtenerServicioExistente() {
 
         ServicioCostura servicio = new ServicioCostura();
 
         when(repository.findById(1))
                 .thenReturn(Optional.of(servicio));
 
-        ServicioCostura resultado = service.obtenerPorId(1);
+        ServicioCostura resultado =
+                service.obtenerPorId(1);
 
         assertNotNull(resultado);
-
-        verify(repository).findById(1);
     }
 
     @Test
-    void debeRetornarNullSiServicioNoExiste() {
+    void debeRetornarNullSiNoExiste() {
 
-        when(repository.findById(1))
+        when(repository.findById(99))
                 .thenReturn(Optional.empty());
 
-        ServicioCostura resultado = service.obtenerPorId(1);
+        ServicioCostura resultado =
+                service.obtenerPorId(99);
 
         assertNull(resultado);
     }
 
     @Test
-    void debeEliminarServicioPorId() {
+    void debeEliminarServicio() {
 
         service.eliminarServicio(1);
 
         verify(repository).deleteById(1);
     }
-
 }

@@ -118,4 +118,81 @@ class ProductoControllerTest {
 
         assertEquals(404, respuesta.getStatusCode().value());
     }
+
+    @Test
+    void deberiaCrearProductoSinFoto() {
+
+        Producto productoGuardado = new Producto();
+        productoGuardado.setNombre("Oso");
+
+        when(productoService.guardar(any(Producto.class)))
+                .thenReturn(productoGuardado);
+
+        var respuesta = controller.crearProducto(
+                "Oso",
+                "Descripcion",
+                1000.0,
+                5,
+                null
+        );
+
+        assertEquals(200, respuesta.getStatusCode().value());
+        verify(productoService).guardar(any(Producto.class));
+    }
+    @Test
+    void deberiaEditarProductoExistenteSinCambiarFoto() {
+
+        Producto producto = new Producto();
+        producto.setIdProducto(1);
+
+        when(productoRepository.findById(1))
+                .thenReturn(Optional.of(producto));
+
+        when(productoService.guardar(any(Producto.class)))
+                .thenReturn(producto);
+
+        var respuesta = controller.editarProductoConFoto(
+                1,
+                "Nuevo",
+                "Desc",
+                1500.0,
+                10,
+                null
+        );
+
+        assertEquals(200, respuesta.getStatusCode().value());
+    }
+    @Test
+    void deberiaRetornar404AlEditarProductoInexistente() {
+
+        when(productoRepository.findById(99))
+                .thenReturn(Optional.empty());
+
+        var respuesta = controller.editarProductoConFoto(
+                99,
+                "Nuevo",
+                "Desc",
+                1500.0,
+                10,
+                null
+        );
+
+        assertEquals(404, respuesta.getStatusCode().value());
+    }
+    @Test
+    void deberiaRetornar500SiFallaGuardarProducto() {
+
+        when(productoService.guardar(any()))
+                .thenThrow(new RuntimeException("error"));
+
+        var respuesta = controller.crearProducto(
+                "Oso",
+                "Desc",
+                1000.0,
+                2,
+                null
+        );
+
+        assertEquals(500, respuesta.getStatusCode().value());
+    }
 }

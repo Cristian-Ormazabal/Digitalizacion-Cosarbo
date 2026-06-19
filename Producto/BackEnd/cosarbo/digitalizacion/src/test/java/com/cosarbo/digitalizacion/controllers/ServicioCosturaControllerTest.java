@@ -25,7 +25,6 @@ class ServicioCosturaControllerTest {
     @InjectMocks
     private ServicioCosturaController controller;
 
-
     @Test
     void deberiaListarServicios() {
 
@@ -34,11 +33,11 @@ class ServicioCosturaControllerTest {
         when(service.listarServicios())
                 .thenReturn(servicios);
 
-        List<ServicioCostura> respuesta = controller.listar();
+        List<ServicioCostura> resultado =
+                controller.listar();
 
-        assertEquals(servicios, respuesta);
+        assertEquals(servicios, resultado);
     }
-
 
     @Test
     void deberiaCrearServicio() {
@@ -48,14 +47,14 @@ class ServicioCosturaControllerTest {
         when(service.guardarServicio(servicio))
                 .thenReturn(servicio);
 
-        ServicioCostura respuesta = controller.crear(servicio);
+        ServicioCostura resultado =
+                controller.crear(servicio);
 
-        assertEquals(servicio, respuesta);
+        assertEquals(servicio, resultado);
     }
 
-
     @Test
-    void deberiaObtenerServicioPorId() {
+    void deberiaObtenerServicioExistente() {
 
         ServicioCostura servicio = new ServicioCostura();
 
@@ -68,7 +67,6 @@ class ServicioCosturaControllerTest {
         assertEquals(servicio, respuesta.getBody());
     }
 
-
     @Test
     void deberiaRetornar404SiServicioNoExiste() {
 
@@ -79,7 +77,6 @@ class ServicioCosturaControllerTest {
 
         assertEquals(404, respuesta.getStatusCode().value());
     }
-
 
     @Test
     void deberiaEliminarServicio() {

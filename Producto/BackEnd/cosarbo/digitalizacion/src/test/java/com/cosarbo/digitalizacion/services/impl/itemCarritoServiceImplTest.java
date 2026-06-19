@@ -150,4 +150,85 @@ class itemCarritoServiceImplTest {
                 .deleteById(1);
         }
 
+        @Test
+        void debeLanzarErrorSiProductoNoExiste() {
+
+                itemCarritoDTO dto = new itemCarritoDTO();
+                dto.setIdCarrito(1);
+                dto.setIdProducto(99);
+
+                Carrito carrito = new Carrito();
+
+                when(carritoRepository.findById(1))
+                        .thenReturn(Optional.of(carrito));
+
+                when(productoRepository.findById(99))
+                        .thenReturn(Optional.empty());
+
+                RuntimeException error = assertThrows(
+                        RuntimeException.class,
+                        () -> service.agregarProducto(dto)
+                );
+
+                assertEquals("Producto no encontrado", error.getMessage());
+        }
+        @Test
+        void debeListarItemsPorCarrito() {
+
+                Carrito carrito = new Carrito();
+
+                when(carritoRepository.findById(1))
+                        .thenReturn(Optional.of(carrito));
+
+                when(itemCarritoRepository.findByCarrito(carrito))
+                        .thenReturn(new ArrayList<>());
+
+                assertNotNull(service.listarPorCarrito(1));
+
+                verify(itemCarritoRepository)
+                        .findByCarrito(carrito);
+        }
+
+        @Test
+                void vaciarCarritoDebeEliminarItems() {
+
+                Carrito carrito = new Carrito();
+
+                when(carritoRepository.findById(1))
+                        .thenReturn(Optional.of(carrito));
+
+                service.vaciarCarrito(1);
+
+                verify(itemCarritoRepository)
+                        .deleteByCarrito(carrito);
+        }
+
+        @Test
+        void vaciarCarritoDebeLanzarErrorSiNoExiste() {
+
+        when(carritoRepository.findById(1))
+                .thenReturn(Optional.empty());
+
+        RuntimeException error = assertThrows(
+                RuntimeException.class,
+                () -> service.vaciarCarrito(1)
+        );
+
+        assertEquals("Carrito no encontrado", error.getMessage());
+        }
+        @Test
+        void actualizarCantidadDebeLanzarErrorSiItemNoExiste() {
+
+        when(itemCarritoRepository.findById(1))
+                .thenReturn(Optional.empty());
+
+        RuntimeException error = assertThrows(
+                RuntimeException.class,
+                () -> service.actualizarCantidad(1, 3)
+        );
+
+        assertEquals("Item no encontrado", error.getMessage());
+        }
+
+        
 }
