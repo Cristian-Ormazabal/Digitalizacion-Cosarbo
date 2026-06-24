@@ -5,7 +5,7 @@ public class UsuarioRegistroDTO {
     private String correo;
     private String password;
 
-    // ¡IMPORTANTE! Asegúrate de tener los Getters y Setters
+    // Getters y Setters
     public String getNombre() { return nombre; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getCorreo() { return correo; }

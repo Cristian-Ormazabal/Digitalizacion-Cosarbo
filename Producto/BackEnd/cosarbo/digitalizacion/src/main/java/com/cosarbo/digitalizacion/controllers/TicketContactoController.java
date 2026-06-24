@@ -9,7 +9,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tickets")
-@CrossOrigin(origins = {"http://localhost:5173", "https://cosarbo.netlify.app"})
 public class TicketContactoController {
 
     @Autowired

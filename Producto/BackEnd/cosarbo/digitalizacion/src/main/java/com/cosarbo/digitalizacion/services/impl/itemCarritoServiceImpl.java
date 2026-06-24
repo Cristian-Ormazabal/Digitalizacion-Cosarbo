@@ -30,30 +30,39 @@ public class itemCarritoServiceImpl implements itemCarritoService {
     @Override
     @Transactional
     public itemCarrito agregarProducto(itemCarritoDTO itemDTO) {
-        // 1. Verificar que el carrito existe
+        // Verificar que el carrito existe
         Carrito carrito = carritoRepository.findById(itemDTO.getIdCarrito())
                 .orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
 
-        // 2. Verificar que el producto existe
+        // Verificar que el producto existe
         Producto producto = productoRepository.findById(itemDTO.getIdProducto())
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        // 3. LÓGICA CLAVE: ¿El producto ya está en este carrito?
+        // Verificar si el producto ya existe en este carrito para evitar duplicados
         Optional<itemCarrito> itemExistente = itemCarritoRepository
                 .findByCarritoAndProducto(carrito, producto);
 
         if (itemExistente.isPresent()) {
-            // Si ya existe, aumentamos la cantidad
+            // Si el producto ya está en el carrito, se acumula la cantidad
             itemCarrito item = itemExistente.get();
-            item.setCantidad(item.getCantidad() + itemDTO.getCantidad());
+            int nuevaCantidad = item.getCantidad() + itemDTO.getCantidad();
+            item.setCantidad(nuevaCantidad);
+            
+            // Se multiplica el precio real de la BD por la nueva cantidad acumulada
+            item.setSubTotal(producto.getPrecio() * nuevaCantidad);
+            
             return itemCarritoRepository.save(item);
-        } else {
-            // Si no existe, creamos uno nuevo
+        } 
+        else {
             itemCarrito nuevoItem = new itemCarrito();
             nuevoItem.setCarrito(carrito);
             nuevoItem.setProducto(producto);
             nuevoItem.setCantidad(itemDTO.getCantidad());
-            nuevoItem.setSubTotal(itemDTO.getSubTotal());
+            nuevoItem.setSubTotal(producto.getPrecio() * itemDTO.getCantidad());
+            
+            // Se avisa al carrito en memoria que tiene un nuevo ítem
+            carrito.getItems().add(nuevoItem); 
+            
             return itemCarritoRepository.save(nuevoItem);
         }
     }
@@ -66,14 +75,23 @@ public class itemCarritoServiceImpl implements itemCarritoService {
     }
 
     @Override
+    @Transactional
     public itemCarrito actualizarCantidad(Integer idItem, Integer nuevaCantidad) {
         itemCarrito item = itemCarritoRepository.findById(idItem)
                 .orElseThrow(() -> new RuntimeException("Item no encontrado"));
+        
         item.setCantidad(nuevaCantidad);
+        
+        // Si se usan botones de más/menos en la vista del carrito, se recalcula el subtotal
+        if (item.getProducto() != null) {
+            item.setSubTotal(item.getProducto().getPrecio() * nuevaCantidad);
+        }
+        
         return itemCarritoRepository.save(item);
     }
 
     @Override
+    @Transactional
     public void eliminar(Integer idItem) {
         itemCarritoRepository.deleteById(idItem);
     }

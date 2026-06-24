@@ -12,7 +12,6 @@ const formatearPrecio = (precio) => {
 };
 
 export default function PagoRealizado() {
-    // Obtenemos el ID del carrito desde la URL (:ordenId en App.jsx)
     const { ordenId } = useParams();
     
     const [items, setItems] = useState([]);
@@ -22,10 +21,8 @@ export default function PagoRealizado() {
     useEffect(() => {
         const fetchDetalleCompra = async () => {
             try {
-                // Consultamos los items del carrito que se acaba de comprar
                 const response = await api.get(`/api/v1/items-carrito/carrito/${ordenId}`);
                 
-                // Verificamos que lleguen datos
                 if (response.data) {
                     setItems(response.data);
                 }
@@ -42,8 +39,7 @@ export default function PagoRealizado() {
         }
     }, [ordenId]);
 
-    // Cálculo del total basado en los items recibidos
-    const totalPagado = items.reduce((acc, item) => acc + (item.subTotal * item.cantidad), 0);
+    const totalPagado = items.reduce((acc, item) => acc + (item.subTotal), 0);
 
     if (isLoading) {
         return (
@@ -92,7 +88,7 @@ export default function PagoRealizado() {
                                                 <small className="text-muted">Tejido a mano con amor</small>
                                             </td>
                                             <td className="text-center">{item.cantidad}</td>
-                                            <td className="text-end">{formatearPrecio(item.subTotal * item.cantidad)}</td>
+                                            <td className="text-end">{formatearPrecio(item.subTotal)}</td>
                                         </tr>
                                     ))
                                 ) : (

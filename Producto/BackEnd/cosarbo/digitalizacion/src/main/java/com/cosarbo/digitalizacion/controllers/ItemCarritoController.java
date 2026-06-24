@@ -11,15 +11,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/items-carrito")
-@CrossOrigin(origins = {"http://localhost:5173", "https://cosarbo.netlify.app"})
 public class ItemCarritoController {
 
     @Autowired
     private itemCarritoService itemCarritoService;
 
-    // AÑADIR PRODUCTO AL CARRITO (El que usa Catalogo.jsx)
+    // AÑADIR PRODUCTO AL CARRITO
     @PostMapping
-    public ResponseEntity<itemCarrito> agregarItem(@RequestBody itemCarritoDTO itemDTO) {
+    public ResponseEntity<itemCarrito> agregarProducto(@RequestBody itemCarritoDTO itemDTO) {
         try {
             itemCarrito nuevoItem = itemCarritoService.agregarProducto(itemDTO);
             return ResponseEntity.ok(nuevoItem);
@@ -41,7 +40,7 @@ public class ItemCarritoController {
         return ResponseEntity.noContent().build();
     }
 
-    // ACTUALIZAR CANTIDAD (Botones + y - en la vista del carrito)
+    // ACTUALIZAR CANTIDAD
     @PutMapping("/{idItem}/cantidad")
     public ResponseEntity<itemCarrito> actualizarCantidad(
             @PathVariable Integer idItem, 
