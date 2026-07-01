@@ -183,7 +183,7 @@ const Carrito = () => {
                             className="w-100 rounded-pill shadow-sm fw-bold mb-3"
                             onClick={irAlCheckout}
                         >
-                            Ir al Checkout
+                            Ir a Pagar
                         </Button>
                         <div className="text-center">
                             <small className="text-muted">
