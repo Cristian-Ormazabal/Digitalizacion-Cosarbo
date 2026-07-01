@@ -83,31 +83,31 @@ export default function DetallesProducto() {
                         <Card.Img 
                             src={producto.imagen} 
                             alt={producto.nombre} 
-                            style={{ objectFit: 'responsive', maxHeight: '100%' }}
+                            style={{ objectFit: 'contain', maxHeight: '500px', backgroundColor: '#fefae0' }}
                         />
                     </Card>
                 </Col>
 
                 {/* INFO */}
                 <Col md={6} className="ps-md-5">
-                    <Badge bg="success" className="mb-2">Nuevo Lanzamiento</Badge>
+                    <Badge bg="success" className="mb-2 fs-6">Nuevo Lanzamiento</Badge>
                     <h1 className="display-4 fw-bold text-dark">{producto.nombre}</h1>
                     <h3 className="text-success fw-bold mb-4">
                         {formatearPrecio(producto.precio)}
                     </h3>
                     
-                    <p className="lead text-muted mb-4">
+                    <p className="mb-4" style={{ fontSize: '1.5rem', lineHeight: '1.6' }}>
                         {producto.descripcion}
                     </p>
 
                     <div className="mb-4">
                         <span className="fw-bold d-block mb-2">Disponibilidad:</span>
                         {producto.stock > 0 ? (
-                            <Badge bg="info" className="p-2">
-                                {producto.stock} unidades listas para envío en Maipú
+                            <Badge bg="success" className="p-2 fs-6">
+                                {producto.stock} unidades disponibles
                             </Badge>
                         ) : (
-                            <Badge bg="danger" className="p-2">Agotado temporalmente</Badge>
+                            <Badge bg="danger" className="p-2 fs-6">Agotado temporalmente</Badge>
                         )}
                     </div>
 
@@ -123,17 +123,12 @@ export default function DetallesProducto() {
                         </Button>
                         <Button 
                             variant="outline-secondary" 
-                            className="rounded-pill"
+                            className="rounded-pill fs-5"
                             onClick={() => navigate('/catalogo')}
                         >
                             Volver al catálogo
                         </Button>
                     </div>
-
-                    <p className="small text-center text-muted mt-3">
-                        <i className="bi bi-truck me-2"></i> 
-                        Envío gratis en compras sobre $30.000 (Solo Maipú)
-                    </p>
                 </Col>
             </Row>
         </Container>

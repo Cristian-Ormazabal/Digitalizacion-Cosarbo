@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/apiConfig'; 
-import { Container, Table, Button, Badge, Card, Spinner, Row, Col, Modal, Form, Tabs, Tab } from 'react-bootstrap';
+import { Container, Table, Button, Badge, Card, Spinner, Row, Col, Modal, Form, Tabs, Tab, Pagination } from 'react-bootstrap';
 
 export default function AdminPanel() {
     const [pedidos, setPedidos] = useState([]);
@@ -9,8 +9,16 @@ export default function AdminPanel() {
     const [showModal, setShowModal] = useState(false);
     const [servicios, setServicios] = useState([]);
     const [showModalServicio, setShowModalServicio] = useState(false);
-    
-    // Para capturar el archivo binario de la imagen seleccionada
+    const [currentPage, setCurrentPage] = useState(1);
+    const pedidosPerPage = 15; 
+
+    const indexOfLastPedido = currentPage * pedidosPerPage;
+    const indexOfFirstPedido = indexOfLastPedido - pedidosPerPage;
+    const currentPedidos = pedidos?.slice(indexOfFirstPedido, indexOfLastPedido) || [];
+
+
+    const totalPages = Math.ceil((pedidos?.length || 0) / pedidosPerPage);
+
     const [archivoFoto, setArchivoFoto] = useState(null);
 
     const [servicioEdit, setServicioEdit] = useState({
@@ -161,7 +169,8 @@ export default function AdminPanel() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {pedidos?.map(p => (
+                                    {/* CAMBIO AQUÍ: Mapeamos 'currentPedidos' en vez de 'pedidos' */}
+                                    {currentPedidos.map(p => (
                                         <tr key={p.idPedido}>
                                             <td>#PED-{p.idPedido}</td>
                                             <td>{p.nombreReceptor}</td>
@@ -173,8 +182,36 @@ export default function AdminPanel() {
                                             </td>
                                         </tr>
                                     ))}
+                                    {currentPedidos.length === 0 && (
+                                        <tr>
+                                            <td colSpan="6" className="text-center text-muted py-3">No hay pedidos registrados.</td>
+                                        </tr>
+                                    )}
                                 </tbody>
                             </Table>
+
+                            {/* CONTROL DE PAGINACIÓN */}
+                            {totalPages > 1 && (
+                                <div className="d-flex justify-content-center mt-3">
+                                    <Pagination>
+                                        <Pagination.First onClick={() => setCurrentPage(1)} disabled={currentPage === 1} />
+                                        <Pagination.Prev onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1} />
+                                        
+                                        {[...Array(totalPages)].map((_, index) => (
+                                            <Pagination.Item 
+                                                key={index + 1} 
+                                                active={index + 1 === currentPage}
+                                                onClick={() => setCurrentPage(index + 1)}
+                                            >
+                                                {index + 1}
+                                            </Pagination.Item>
+                                        ))}
+
+                                        <Pagination.Next onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages} />
+                                        <Pagination.Last onClick={() => setCurrentPage(totalPages)} disabled={currentPage === totalPages} />
+                                    </Pagination>
+                                </div>
+                            )}
                         </Card.Body>
                     </Card>
                 </Tab>

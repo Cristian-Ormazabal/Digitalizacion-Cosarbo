@@ -29,14 +29,14 @@ const NavbarCustom = () => {
   return (
     <Navbar bg="white" expand="lg" className="navbar-cosarbo sticky-top shadow-sm py-3">
       <Container>
-        <Navbar.Brand as={Link} to="/" className="fw-bold fs-3 text-success">
+        <Navbar.Brand as={Link} to="/" className="fw-bold fs-2 text-success">
           Cosarbo
         </Navbar.Brand>
         
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
+          <Nav className="mx-auto align-items-center">
             <Nav.Link as={Link} to="/servicios" className="nav-link-custom">Servicios de Costura</Nav.Link>
             <Nav.Link as={Link} to="/catalogo" className="nav-link-custom">Amigurumis</Nav.Link>
             <Nav.Link as={Link} to="/nosotros" className="nav-link-custom">Nosotros</Nav.Link>
@@ -54,10 +54,10 @@ const NavbarCustom = () => {
             )}
           </Nav>
 
-          <Nav className="align-items-center">
+          <Nav className="align-items-center ms-auto ms-lg-0">
             {/* CARRITO - Siempre visible */}
             <Nav.Link as={Link} to="/carrito" className="position-relative me-3">
-              <i className="bi bi-cart3 fs-4 text-dark"></i>
+              <i className="bi bi-cart3 fs-3 text-dark"></i>
               {totalItems > 0 && (
                 <span 
                   className="position-absolute badge rounded-pill bg-danger"
@@ -71,7 +71,7 @@ const NavbarCustom = () => {
             {/* LÓGICA CONDICIONAL DE USUARIO */}
             {!userName ? (
               <>
-                <Nav.Link as={Link} to="/login" className="btn-outline-artesanal px-4 rounded-pill me-2">
+                <Nav.Link as={Link} to="/login" className="btn-outline-artesanal px-5 rounded-pill me-2">
                   Ingresar
                 </Nav.Link>
                 <Nav.Link as={Link} to="/registro" className="btn-artesanal px-4 rounded-pill text-white">
@@ -80,9 +80,9 @@ const NavbarCustom = () => {
               </>
             ) : (
               <NavDropdown 
-                title={<span><i className="bi bi-person-circle me-2"></i>{userName}</span>} 
+                title={<span><i className="bi bi-person-circle me-2 fs-4"></i>{userName}</span>} 
                 id="user-dropdown"
-                className="fw-bold"
+                className="fw-bold fs-4"
               >
                 <NavDropdown.Item as={Link} to="/perfil">Mi Perfil</NavDropdown.Item>
                 <NavDropdown.Item as={Link} to="/pedidos">Mis Pedidos / Costuras</NavDropdown.Item>
