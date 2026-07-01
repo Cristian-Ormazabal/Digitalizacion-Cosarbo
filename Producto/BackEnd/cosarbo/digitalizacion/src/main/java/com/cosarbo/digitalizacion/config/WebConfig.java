@@ -10,7 +10,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Permitir todas las rutas
-                .allowedOrigins("https://cosarbo.netlify.app/") // El puerto de tu React
+                .allowedOrigins("http://localhost:5173", "https://cosarbo.netlify.app", "https://cosarbo2.netlify.app") // Los puertos de tu React
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);

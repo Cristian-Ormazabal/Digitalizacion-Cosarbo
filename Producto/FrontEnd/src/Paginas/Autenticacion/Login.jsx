@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-// import api from '../../apiConfig';
+// import axios from 'axios';
+import api from '../../api/apiConfig';
 import { useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
@@ -23,7 +23,7 @@ const Login = () => {
         setError('');
 
         try {
-            const response = await axios.post('http://localhost:8080/api/v1/usuarios/login', formData);
+            const response = await api.post('/api/v1/usuarios/login', formData);
             const user = response.data; 
             // Se guardan los datos de identidad iniciales
             localStorage.setItem('token', response.data.token);
@@ -34,12 +34,10 @@ const Login = () => {
 
             if (user.rol === 'CLIENTE') {
                 try {
-                    const resCarrito = await axios.post(
-                        `http://localhost:8080/api/v1/carrito/usuario/${user.idUsuario}`, 
-                        {}, 
-                        { headers: { Authorization: `Bearer ${user.token}` } }
-                    );
-                    
+                    const resCarrito = await api.post(`/api/v1/carrito/usuario/${user.idUsuario}`, {}, {
+                        headers: { Authorization: `Bearer ${user.token}` }
+                    });
+
                     localStorage.setItem('cartId', resCarrito.data.idCarrito);
                     console.log("Carrito asegurado y sincronizado con éxito ID:", resCarrito.data.idCarrito);
                 } catch (carritoErr) {

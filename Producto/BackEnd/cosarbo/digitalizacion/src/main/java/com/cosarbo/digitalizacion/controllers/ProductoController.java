@@ -15,7 +15,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/productos")
-@CrossOrigin(origins = {"http://localhost:5173", "https://cosarbo.netlify.app"})
 public class ProductoController {
 
     @Autowired

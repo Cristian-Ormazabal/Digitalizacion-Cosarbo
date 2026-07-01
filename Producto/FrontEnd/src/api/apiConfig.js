@@ -5,7 +5,8 @@ const api = axios.create({
     // Si no, apunta de inmediato al backend alojado en Render/Railway.
     baseURL: window.location.hostname === 'localhost' 
         ? 'http://localhost:8080' 
-        : 'https://tu-backend-en-la-nube.com'
+        : import.meta.env.VITE_API_URL
+
 });
 
 // Interceptor de peticiones (Mantiene el token inyectado)
