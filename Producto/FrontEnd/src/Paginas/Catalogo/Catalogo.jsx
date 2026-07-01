@@ -71,7 +71,7 @@ const Catalogo = () => {
         <Container className="mt-5 mb-5">
             <div className="text-center mb-5">
                 <h1 className="fw-bold text-success display-4">Cosarbo Amigurumis</h1>
-                <p className="text-muted">Hechos a mano con cariño en Maipú</p>
+                <h3 className="text-muted">Hechos a mano con cariño en Maipú</h3>
                 <div className="mx-auto bg-success" style={{ height: '3px', width: '50px' }}></div>
             </div>
 
@@ -79,14 +79,14 @@ const Catalogo = () => {
 
             <Row>
                 {productos.map((prod) => (
-                    <Col key={prod.idProducto} xs={12} md={6} lg={4} className="mb-4">
+                    <Col key={prod.idProducto} xs={12} md={6} lg={3} className="mb-4">
                         <Card className="h-100 border-0 shadow-sm card-hover">
                             <div className="position-relative">
                                 <Card.Img 
                                     variant="top" 
                                     src={prod.imagen || 'https://placehold.co/400x400?text=Cosarbo+Amigurumi'} 
                                     alt={prod.nombre}
-                                    style={{ height: '280px', objectFit: 'cover', cursor: 'pointer' }}
+                                    style={{ height: '240px', objectFit: 'contain', backgroundColor: '#fefae0', cursor: 'pointer' }}
                                     onClick={() => navigate(`/producto/${prod.idProducto}`)} 
                                 />
                                 {prod.stock <= 0 && (
@@ -97,7 +97,7 @@ const Catalogo = () => {
                             <Card.Body className="d-flex flex-column p-4">
                                 <Card.Title className="fw-bold h4">{prod.nombre}</Card.Title>
                                 <Card.Text className="text-muted flex-grow-1">
-                                    {prod.descripcion?.substring(0, 100)}...
+                                    {prod.descripcion?.substring(0, 100)}
                                 </Card.Text>
                                 
                                 <div className="d-flex justify-content-between align-items-center mt-3 mb-3">
@@ -112,7 +112,7 @@ const Catalogo = () => {
                                 <div className="d-grid gap-2">
                                     <Button 
                                         variant="success" 
-                                        className="rounded-pill fw-bold"
+                                        className="rounded-pill fw-bold fs-5"
                                         onClick={() => handleAgregarCarrito(prod)}
                                         disabled={prod.stock <= 0}
                                     >
@@ -121,7 +121,7 @@ const Catalogo = () => {
                                     
                                     <Button 
                                         variant="outline-secondary" 
-                                        className="rounded-pill btn-sm"
+                                        className="rounded-pill btn-sm fs-5"
                                         onClick={() => navigate(`/producto/${prod.idProducto}`)}
                                     >
                                         Ver detalles

@@ -50,7 +50,7 @@ const Home = () => {
           />
           <Carousel.Caption className="custom-caption">
             <h1 className="display-4 fw-bold">Amigurumis con Alma</h1>
-            <p>Diseños únicos tejidos 100% a mano para regalar amor.</p>
+            <h3>Diseños únicos tejidos 100% a mano para regalar amor.</h3>
             <Button variant="warning" className="rounded-pill px-4" onClick={() => navigate('/catalogo')}>
               Ver Colección
             </Button>
@@ -65,7 +65,7 @@ const Home = () => {
           />
           <Carousel.Caption className="custom-caption">
             <h1 className="display-4 fw-bold">Costura y Reparaciones</h1>
-            <p>Le damos una segunda vida a tus prendas favoritas con ajustes perfectos.</p>
+            <h3>Le damos una segunda vida a tus prendas favoritas con ajustes perfectos.</h3>
             <Button variant="success" className="rounded-pill px-4" onClick={() => navigate('/servicios')}>
               Ver Servicios
             </Button>
@@ -79,11 +79,11 @@ const Home = () => {
           <Row className="align-items-center">
             <Col md={8}>
               <h2 className="text-white">¿Tu prenda favorita necesita un ajuste?</h2>
-              <p className="lead">Especialistas en bastas, cambios de cierre y ajustes de medida con retiro en local.</p>
+              <p className="lead">Especialista en bastas, cambios de cierre y ajustes de medida con retiro en local.</p>
             </Col>
             <Col md={4} className="text-md-end">
               <Button variant="light" size="lg" className="rounded-pill px-4 text-success fw-bold" onClick={() => navigate('/servicios')}>
-                Ver Disponibilidad
+                Ver servicios de costura
               </Button>
             </Col>
           </Row>
@@ -94,11 +94,15 @@ const Home = () => {
       <Container className="my-5 text-center ">
         <Row>
           <Col md={6}>
-            <Button onClick={() => navigate('/catalogo')} className="category-circle mb-3 mx-auto shadow" style={{ width: '150px', height: '150px', backgroundColor: '#CCD5AE', borderRadius: '50%' }}></Button>
+            <Button onClick={() => navigate('/catalogo')} 
+            className="category-circle mb-3 mx-auto shadow" 
+            style={{ width: '150px', height: '150px', backgroundColor: '#CCD5AE', borderRadius: '50%', backgroundImage: "url('https://res.cloudinary.com/deqv8wwjo/image/upload/v1782847013/mym1xixqy1xtnhjqjlnj.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}></Button>
             <h4>Amigurumis</h4>
           </Col>
           <Col md={6}>
-            <Button onClick={() => navigate('/servicios')} className="category-circle mb-3 mx-auto shadow" style={{ width: '150px', height: '150px', backgroundColor: '#D4A373', borderRadius: '50%' }}></Button>
+            <Button onClick={() => navigate('/servicios')} 
+            className="category-circle mb-3 mx-auto shadow" 
+            style={{ width: '150px', height: '150px', backgroundColor: '#D4A373', borderRadius: '50%', backgroundImage: "url('https://res.cloudinary.com/deqv8wwjo/image/upload/v1782847340/6DEC33C4-D8A7-4F09-8497-654526FE307A_z64cgg.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}></Button>
             <h4>Costura</h4>
           </Col>
         </Row>
@@ -118,14 +122,14 @@ const Home = () => {
                                 <Card.Img 
                                     variant="top" 
                                     src={prod.imagen || 'https://via.placeholder.com/200'} 
-                                    style={{ height: '250px', objectFit: 'cover' }}
+                                    style={{ height: '250px', objectFit: 'contain', backgroundColor: '#fefae0' }}
                                 />
                                 <Card.Body className="d-flex flex-column">
                                     <Card.Title className="fw-bold">{prod.nombre}</Card.Title>
-                                    <Card.Text className="text-muted flex-grow-1">
-                                        {prod.descripcion?.substring(0, 50)}...
+                                    <Card.Text className=" flex-grow-1 fs-5">
+                                        {prod.descripcion?.substring(0, 50)}
                                     </Card.Text>
-                                    <div className="d-flex justify-content-between align-items-center mt-auto">
+                                    <div className="d-flex justify-content-between align-items-center mt-auto fs-4">
                                         <span className="fw-bold text-success">
                                             ${prod.precio?.toLocaleString('es-CL')}
                                         </span>

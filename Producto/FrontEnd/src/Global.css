@@ -2,7 +2,7 @@
 
 /* Paleta de colores y variables */
 :root {
-  --color-crema: #FEFAE0;
+  --color-crema: #fefae0;
   --color-cafe: #D4A373;
   --color-verde-musgo: #CCD5AE;
   --color-verde-oscuro: #283618;
@@ -135,10 +135,16 @@ h3 {
   color: var(--color-verde-oscuro) !important;
   font-weight: 500;
   transition: color 0.3s;
+  font-size: 22px;
 }
 
 .nav-link-custom:hover {
   color: var(--color-cafe) !important;
+}
+
+.nav-link-custom.nav-link {
+    display: center;
+    gap: 10px;
 }
 
 /* Botón de Registro (Sólido) */
@@ -146,6 +152,7 @@ h3 {
   background-color: #D4A373 !important; /* Color Café */
   border: none;
   transition: 0.3s;
+  font-size: 20px;
 }
 
 .btn-artesanal:hover {
@@ -158,6 +165,7 @@ h3 {
   border: 2px solid #D4A373 !important;
   color: #D4A373 !important;
   transition: 0.3s;
+  font-size: 20px;
 }
 
 .btn-outline-artesanal:hover {
